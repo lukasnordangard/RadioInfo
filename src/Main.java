@@ -11,6 +11,7 @@ public class Main {
             SwingUtilities.invokeLater(() -> {
                 RadioInfoUI view = new RadioInfoUI(controller);
                 view.createAndShowGUI();
+                controller.API();
             });
         } catch (Exception e) {
             e.printStackTrace();
