@@ -1,4 +1,5 @@
 package View;
+import Controller.Controller;
 import Model.Program;
 
 import javax.swing.*;
@@ -12,6 +13,11 @@ public class RadioInfoUI {
     private JFrame frame;
     private JTable table;
     private JComboBox<String> channelComboBox;
+    private final Controller controller;
+
+    public RadioInfoUI(Controller controller){
+        this.controller = controller;
+    }
 
     public void createAndShowGUI() {
         frame = new JFrame("RadioInfoUI");
@@ -34,7 +40,7 @@ public class RadioInfoUI {
         fileMenu.add(exitMenuItem);
 
         JMenu channelMenu = new JMenu("Channels");
-        List<String> channelList = getChannelList(); // TODO: Implement this method to get the list of channels
+        List<String> channelList = controller.getChannelList(); // TODO: Implement this method to get the list of channels
         for (String channel : channelList) {
             JMenuItem channelMenuItem = new JMenuItem(channel);
             channelMenuItem.addActionListener(e -> displayChannelSchedule());
@@ -51,7 +57,7 @@ public class RadioInfoUI {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         channelComboBox = new JComboBox<>();
-        List<String> channelList = getChannelList(); // TODO: Implement this method to get the list of channels
+        List<String> channelList = controller.getChannelList(); // TODO: Implement this method to get the list of channels
         for (String channel : channelList) {
             channelComboBox.addItem(channel);
         }
@@ -83,25 +89,12 @@ public class RadioInfoUI {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.minusHours(12);
 
-        List<Program> programList = getProgramList(startTime); // TODO: Implement this method
+        List<Program> programList = controller.getProgramList(startTime); // TODO: Implement this method
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         for (Program program : programList) {
             model.addRow(new Object[]{program.getName(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)});
         }
-    }
-
-    // Controller that communicates with api
-    private List<String> getChannelList() {
-        return List.of("Channel1", "Channel2", "Channel3");
-    }
-
-    private List<Program> getProgramList(LocalDateTime startTime) {
-        return List.of(
-            new Program("Program1", startTime, startTime.plusMinutes(30)),
-            new Program("Program2", startTime.plusMinutes(30), startTime.plusHours(1)),
-            new Program("Program3", startTime.plusHours(1), startTime.plusHours(2))
-        );
     }
 }
