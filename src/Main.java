@@ -11,7 +11,9 @@ public class Main {
             SwingUtilities.invokeLater(() -> {
                 RadioInfoUI view = new RadioInfoUI(controller);
                 view.createAndShowGUI();
-                controller.API();
+                //controller.getJsonChannels();
+                controller.getXmlChannels();
+                System.out.println(controller.getCannelFromAPI(4540));
             });
         } catch (Exception e) {
             e.printStackTrace();
