@@ -1,5 +1,6 @@
 package View;
 import Controller.Controller;
+import Model.Channel;
 import Model.Program;
 
 import javax.swing.*;
@@ -40,9 +41,9 @@ public class RadioInfoUI {
         fileMenu.add(exitMenuItem);
 
         JMenu channelMenu = new JMenu("Channels");
-        List<String> channelList = controller.getChannelList(); // TODO: Implement this method to get the list of channels
-        for (String channel : channelList) {
-            JMenuItem channelMenuItem = new JMenuItem(channel);
+        List<Channel> channelList = controller.getChannels();
+        for (Channel channel : channelList) {
+            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             channelMenuItem.addActionListener(e -> displayChannelSchedule());
             channelMenu.add(channelMenuItem);
         }
@@ -57,9 +58,9 @@ public class RadioInfoUI {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         channelComboBox = new JComboBox<>();
-        List<String> channelList = controller.getChannelList(); // TODO: Implement this method to get the list of channels
-        for (String channel : channelList) {
-            channelComboBox.addItem(channel);
+        List<Channel> channelList = controller.getChannels();
+        for (Channel channel : channelList) {
+            channelComboBox.addItem(channel.getName());
         }
 
         JButton showScheduleButton = new JButton("Show Schedule");

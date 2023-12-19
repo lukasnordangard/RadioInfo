@@ -19,9 +19,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 
 public class Controller {
-    public List<String> getChannelList() {
-        return List.of("Channel1", "Channel2", "Channel3");
-    }
 
     public List<Program> getProgramList(LocalDateTime startTime) {
         return List.of(
@@ -111,7 +108,6 @@ public class Controller {
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
