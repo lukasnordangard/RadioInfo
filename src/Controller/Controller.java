@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Channel;
 import Model.Program;
 
 import java.time.LocalDateTime;
@@ -64,7 +65,8 @@ public class Controller {
         }
     }
 
-    public static void getXmlChannels() {
+    public static List<String> getXmlChannels() {
+        List<String> imageUrls =  new ArrayList<>();
         try {
             // Send GET request to API
             String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
@@ -84,7 +86,7 @@ public class Controller {
             reader.close();
 
             // Parse the XML response
-            List<String> imageUrls = parseXmlResponse(response.toString());
+            imageUrls = parseXmlResponse(response.toString());
 
             // Close the connection
             connection.disconnect();
@@ -92,7 +94,76 @@ public class Controller {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return imageUrls;
     }
+
+    public static List<Channel> getChannels() {
+        List<Channel> channels =  new ArrayList<>();
+        try {
+            // Send GET request to API
+            String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            // Read the response from the API
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            reader.close();
+
+            // Parse the XML response
+            channels = parseXmlChannels(response.toString());
+
+            // Close the connection
+            connection.disconnect();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return channels;
+    }
+
+    private static List<Channel> parseXmlChannels(String xmlString) {
+        List<Channel> channels = new ArrayList<>();
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Parse the XML string
+            Document doc = builder.parse(new InputSource(new StringReader(xmlString)));
+
+            // Get the list of channel elements
+            NodeList channelNodes = doc.getElementsByTagName("channel");
+
+            for (int i = 0; i < channelNodes.getLength(); i++) {
+                Element channelElement = (Element) channelNodes.item(i);
+
+                // Extract channel information
+                int channelId = Integer.parseInt(channelElement.getAttribute("id"));
+                String channelName = channelElement.getAttribute("name");
+                String imageURL = channelElement.getElementsByTagName("image").item(0).getTextContent();
+
+                // Create a new Channel object
+                Channel channel = new Channel(channelId, channelName, imageURL);
+
+                // Add the channel to the list
+                channels.add(channel);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return channels;
+    }
+
 
     public static List<String> parseXmlResponse(String xmlString) {
         List<String> imageUrls = new ArrayList<>();
@@ -123,6 +194,7 @@ public class Controller {
 
     public String getCannelFromAPI(int id) {
         StringBuilder response = new StringBuilder();
+        String imageUrl ="";
         try{
             String apiUrl = "https://api.sr.se/api/v2/channels/" + id;
             URL url = new URL(apiUrl);
@@ -141,15 +213,17 @@ public class Controller {
 
             List<String> imageUrls = parseXmlResponse(response.toString());
 
+
             // Print the image URLs
-            for (String imageUrl : imageUrls) {
-                System.out.println("Image URL: " + imageUrl);
+            for (String ur : imageUrls) {
+                System.out.println("Image URL: " + ur);
+                imageUrl = ur;
             }
 
         } catch (Exception e){
 
         }
-        return response.toString();
+        return imageUrl;
     }
 
 }
