@@ -11,13 +11,12 @@ public class Main {
 
         try {
             SwingUtilities.invokeLater(() -> {
-                //RadioInfoUI view = new RadioInfoUI(controller);
-                //view.createAndShowGUI();
-                //controller.getJsonChannels();
-                //controller.getXmlChannels();
-                //System.out.println(controller.getCannelFromAPI(4540));
+                RadioInfoUI view = new RadioInfoUI(controller);
+                view.createAndShowGUI();
 
-                List<Channel> channels = controller.getChannels();
+                //controller.getChannelFromAPI(4540);
+
+                List<Channel> channels = Controller.getChannels();
 
                 // Print channel information for testing
                 for (Channel channel : channels) {
