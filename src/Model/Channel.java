@@ -1,18 +1,19 @@
 package Model;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Channel {
     private final int id;
     private final String name;
     private final String imageURL;
-    private final LinkedList<Program> schedule;
+    private final List<Program> schedule;
 
     public Channel(int id, String name, String imageURL) {
         this.id = id;
         this.name = name;
         this.imageURL = imageURL;
-        this.schedule = new LinkedList<>();
+        this.schedule = new ArrayList<>();
     }
 
     public void addProgram(Program program) {
@@ -31,7 +32,7 @@ public class Channel {
         return imageURL;
     }
 
-    public LinkedList<Program> getSchedule() {
+    public List<Program> getSchedule() {
         return schedule;
     }
 }

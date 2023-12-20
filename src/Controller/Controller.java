@@ -3,7 +3,9 @@ package Controller;
 import Model.Channel;
 import Model.Program;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -20,7 +22,7 @@ import java.io.StringReader;
 
 public class Controller {
 
-    public List<Program> getProgramList(LocalDateTime startTime) {
+    public static List<Program> getProgramList(LocalDateTime startTime) {
         return List.of(
                 new Program("Program1", startTime, startTime.plusMinutes(30)),
                 new Program("Program2", startTime.plusMinutes(30), startTime.plusHours(1)),
@@ -98,7 +100,74 @@ public class Controller {
         return channels;
     }
 
+    public static List<Program> getSchedule(int channelId) {
+        List<Program> programs =  new ArrayList<>();
+        try {
+            // Send GET request to API
+            String scheduleurl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
+            URL url = new URL(scheduleurl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
 
+            // Read the response from the API
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            reader.close();
+
+            // Parse the XML response
+            programs = parseXmlPrograms(response.toString());
+
+            // Close the connection
+            connection.disconnect();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return programs;
+    }
+
+    private static List<Program> parseXmlPrograms(String xmlString) {
+        List<Program> programs = new ArrayList<>();
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Parse the XML string
+            Document doc = builder.parse(new InputSource(new StringReader(xmlString)));
+
+            // Get the list of scheduleepisode elements
+            NodeList scheduleNodes = doc.getElementsByTagName("scheduledepisode");
+
+            for (int i = 0; i < scheduleNodes.getLength(); i++) {
+                Element scheduleElement = (Element) scheduleNodes.item(i);
+
+                // Extract program information
+                String name = scheduleElement.getElementsByTagName("title").item(0).getTextContent();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                LocalDateTime startTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("starttimeutc").item(0).getTextContent(), formatter);
+                LocalDateTime endTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("endtimeutc").item(0).getTextContent(), formatter);
+
+                // Create a new Program object
+                Program program = new Program(name, startTime, endTime);
+
+                // Add the program to the list
+                programs.add(program);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return programs;
+    }
 
     public void getChannelFromAPI(int id) {
         StringBuilder response = new StringBuilder();

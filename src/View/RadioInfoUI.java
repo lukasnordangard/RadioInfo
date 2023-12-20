@@ -14,11 +14,8 @@ public class RadioInfoUI {
     private JFrame frame;
     private JTable table;
     private JComboBox<String> channelComboBox;
-    private final Controller controller;
 
-    public RadioInfoUI(Controller controller){
-        this.controller = controller;
-    }
+    public RadioInfoUI(){ }
 
     public void createAndShowGUI() {
         frame = new JFrame("RadioInfoUI");
@@ -41,7 +38,7 @@ public class RadioInfoUI {
         fileMenu.add(exitMenuItem);
 
         JMenu channelMenu = new JMenu("Channels");
-        List<Channel> channelList = controller.getChannels();
+        List<Channel> channelList = Controller.getChannels();
         for (Channel channel : channelList) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             channelMenuItem.addActionListener(e -> displayChannelSchedule());
@@ -58,7 +55,7 @@ public class RadioInfoUI {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         channelComboBox = new JComboBox<>();
-        List<Channel> channelList = controller.getChannels();
+        List<Channel> channelList = Controller.getChannels();
         for (Channel channel : channelList) {
             channelComboBox.addItem(channel.getName());
         }
@@ -90,7 +87,7 @@ public class RadioInfoUI {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.minusHours(12);
 
-        List<Program> programList = controller.getProgramList(startTime); // TODO: Implement this method
+        List<Program> programList = Controller.getProgramList(startTime); // TODO: Implement this method
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
