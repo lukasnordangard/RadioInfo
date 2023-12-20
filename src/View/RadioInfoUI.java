@@ -87,7 +87,7 @@ public class RadioInfoUI {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.minusHours(12);
 
-        List<Program> programList = Controller.getProgramList(startTime); // TODO: Implement this method
+        List<Program> programList = Controller.getSchedule(132);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
