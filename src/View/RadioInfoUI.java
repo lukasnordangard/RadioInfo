@@ -6,7 +6,6 @@ import Model.Program;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -37,16 +36,68 @@ public class RadioInfoUI {
         exitMenuItem.addActionListener(e -> System.exit(0));
         fileMenu.add(exitMenuItem);
 
-        JMenu channelMenu = new JMenu("Channels");
-        List<Channel> channelList = Controller.getChannels();
-        for (Channel channel : channelList) {
+        Controller ctrl = new Controller();
+        ctrl.loadChannels();
+
+        JMenu channelMenuP1 = new JMenu("P1");
+        for (Channel channel : ctrl.p1) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
-            channelMenuItem.addActionListener(e -> displayChannelSchedule());
-            channelMenu.add(channelMenuItem);
+            channelMenuItem.addActionListener(e -> {
+                int id = channel.getId();
+                displayChannelSchedule(id);
+            });
+            channelMenuP1.add(channelMenuItem);
         }
 
+        JMenu channelMenuP2 = new JMenu("P2");
+        for (Channel channel : ctrl.p2) {
+            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
+            channelMenuItem.addActionListener(e -> {
+                int id = channel.getId();
+                displayChannelSchedule(id);
+            });
+            channelMenuP2.add(channelMenuItem);
+        }
+
+        JMenu channelMenuP3 = new JMenu("P3");
+        for (Channel channel : ctrl.p3) {
+            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
+            channelMenuItem.addActionListener(e -> {
+                int id = channel.getId();
+                displayChannelSchedule(id);
+            });
+            channelMenuP3.add(channelMenuItem);
+        }
+
+        JMenu channelMenuP4 = new JMenu("P4");
+        for (Channel channel : ctrl.p4) {
+            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
+            channelMenuItem.addActionListener(e -> {
+                int id = channel.getId();
+                displayChannelSchedule(id);
+            });
+            channelMenuP4.add(channelMenuItem);
+        }
+
+        JMenu channelMenuOther = new JMenu("Other");
+        for (Channel channel : ctrl.other) {
+            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
+            channelMenuItem.addActionListener(e -> {
+                int id = channel.getId();
+                displayChannelSchedule(id);
+            });
+            channelMenuOther.add(channelMenuItem);
+        }
+
+
+
         menuBar.add(fileMenu);
-        menuBar.add(channelMenu);
+        menuBar.add(channelMenuP1);
+        menuBar.add(channelMenuP2);
+        menuBar.add(channelMenuP3);
+        menuBar.add(channelMenuP4);
+        menuBar.add(channelMenuOther);
+
 
         frame.setJMenuBar(menuBar);
     }
@@ -62,7 +113,7 @@ public class RadioInfoUI {
 
         JButton showScheduleButton = new JButton("Show Schedule");
         showScheduleButton.addActionListener(e -> { channelComboBox.getSelectedItem();
-            displayChannelSchedule();
+            displayChannelSchedule(132);
         });
 
         JPanel controlPanel = new JPanel();
@@ -80,14 +131,11 @@ public class RadioInfoUI {
         frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
 
-    private void displayChannelSchedule() {
+    private void displayChannelSchedule(int channelId) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = now.minusHours(12);
-
-        List<Program> programList = Controller.getSchedule(132);
+        List<Program> programList = Controller.getSchedule(channelId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -95,4 +143,5 @@ public class RadioInfoUI {
             model.addRow(new Object[]{program.getName(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)});
         }
     }
+
 }

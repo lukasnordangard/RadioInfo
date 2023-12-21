@@ -22,12 +22,37 @@ import java.io.StringReader;
 
 public class Controller {
 
+    public List<Channel> p1 = new ArrayList<>();
+    public List<Channel> p2 = new ArrayList<>();
+    public List<Channel> p3 = new ArrayList<>();
+    public List<Channel> p4 = new ArrayList<>();
+    public List<Channel> other = new ArrayList<>();
+
+
     public static List<Program> getProgramList(LocalDateTime startTime) {
         return List.of(
                 new Program("Program1", startTime, startTime.plusMinutes(30)),
                 new Program("Program2", startTime.plusMinutes(30), startTime.plusHours(1)),
                 new Program("Program3", startTime.plusHours(1), startTime.plusHours(2))
         );
+    }
+
+    public void loadChannels() {
+        List<Channel> channels =  Controller.getChannels();
+
+        for (Channel channel : channels){
+            if (channel.getName().contains("P1")) {
+                p1.add(channel);
+            } else if (channel.getName().contains("P2")) {
+                p2.add(channel);
+            } else if (channel.getName().contains("P3")) {
+                p3.add(channel);
+            } else if (channel.getName().contains("P4")) {
+                p4.add(channel);
+            } else {
+                other.add(channel);
+            }
+        }
     }
 
     public static List<Channel> getChannels() {
