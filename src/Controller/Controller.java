@@ -5,7 +5,6 @@ import Model.Program;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,15 +26,6 @@ public class Controller {
     public List<Channel> p3 = new ArrayList<>();
     public List<Channel> p4 = new ArrayList<>();
     public List<Channel> other = new ArrayList<>();
-
-
-    public static List<Program> getProgramList(LocalDateTime startTime) {
-        return List.of(
-                new Program("Program1", startTime, startTime.plusMinutes(30)),
-                new Program("Program2", startTime.plusMinutes(30), startTime.plusHours(1)),
-                new Program("Program3", startTime.plusHours(1), startTime.plusHours(2))
-        );
-    }
 
     public void loadChannels() {
         List<Channel> channels =  Controller.getChannels();
