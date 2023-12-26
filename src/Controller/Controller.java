@@ -133,15 +133,27 @@ public class Controller {
 
             for (int i = 0; i < scheduleNodes.getLength(); i++) {
                 Element scheduleElement = (Element) scheduleNodes.item(i);
+
+                // Retrieve information from XML
+                int episodeId = Integer.parseInt(scheduleElement.getElementsByTagName("episodeid").item(0).getTextContent());
                 String name = scheduleElement.getElementsByTagName("title").item(0).getTextContent();
+                String description = scheduleElement.getElementsByTagName("description").item(0).getTextContent();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
                 LocalDateTime startTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("starttimeutc").item(0).getTextContent(), formatter);
                 LocalDateTime endTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("endtimeutc").item(0).getTextContent(), formatter);
+                int programId = Integer.parseInt(scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id").getTextContent());
+                String imageUrl = scheduleElement.getElementsByTagName("imageurl").item(0).getTextContent();
 
                 // Filter programs based on time
                 if (filterProgram(startTime, endTime)) {
-                    Program program = new Program(name, startTime, endTime);
+                    Program program = new Program(episodeId, programId, name, description, startTime, endTime, imageUrl);
                     programs.add(program);
+                    System.out.println("episodeId: " + episodeId);
+                    System.out.println("name: " + name);
+                    System.out.println("description: " + description);
+                    System.out.println("programId: " + programId);
+                    System.out.println("imageUrl: " + imageUrl);
+                    System.out.println("===================");
                 }
             }
         } catch (Exception e) {
