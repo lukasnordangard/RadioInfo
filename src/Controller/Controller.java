@@ -138,8 +138,8 @@ public class Controller {
                 LocalDateTime startTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("starttimeutc").item(0).getTextContent(), formatter);
                 LocalDateTime endTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("endtimeutc").item(0).getTextContent(), formatter);
 
-                Program program = new Program(name, startTime, endTime);
-                programs.add(program);
+                List<Program> adjustedPrograms = filterPrograms(name, startTime, endTime);
+                programs.addAll(adjustedPrograms);
             }
 
         } catch (Exception e) {
@@ -148,4 +148,26 @@ public class Controller {
 
         return programs;
     }
+
+    private static List<Program> filterPrograms(String name, LocalDateTime startTime, LocalDateTime endTime) {
+        List<Program> filteredPrograms = new ArrayList<>();
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // Calculate the start and end times for the filter (12 hours before and after the last API call time)
+        LocalDateTime filterStartTime = now.minusHours(12);
+        LocalDateTime filterEndTime = now.plusHours(12);
+
+        // Check if the program falls within the filter time range
+        if ((startTime.isAfter(filterStartTime) || startTime.isEqual(filterStartTime)) &&
+                (endTime.isBefore(filterEndTime) || endTime.isEqual(filterEndTime))) {
+            // Include the program in the filtered list
+            Program program = new Program(name, startTime, endTime);
+            filteredPrograms.add(program);
+        }
+
+        return filteredPrograms;
+    }
+
+
 }
