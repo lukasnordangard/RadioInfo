@@ -12,7 +12,6 @@ import java.util.List;
 public class RadioInfoUI {
     private JFrame frame;
     private JTable table;
-    private JComboBox<String> channelComboBox;
 
     public RadioInfoUI(){ }
 
@@ -22,10 +21,26 @@ public class RadioInfoUI {
 
         createMenuBar();
         createMainPanel();
+        centerFrame();
 
         frame.pack();
+        frame.setSize(1200, 720);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private void centerFrame() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+
+        int frameWidth = frame.getWidth();
+        int frameHeight = frame.getHeight();
+
+        int x = (screenWidth - frameWidth) / 2;
+        int y = (screenHeight - frameHeight) / 2;
+
+        frame.setLocation(x, y);
     }
 
     private void createMenuBar() {
@@ -105,27 +120,10 @@ public class RadioInfoUI {
     private void createMainPanel() {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        channelComboBox = new JComboBox<>();
-        List<Channel> channelList = Controller.getChannels();
-        for (Channel channel : channelList) {
-            channelComboBox.addItem(channel.getName());
-        }
-
-        JButton showScheduleButton = new JButton("Show Schedule");
-        showScheduleButton.addActionListener(e -> { channelComboBox.getSelectedItem();
-            displayChannelSchedule(132);
-        });
-
-        JPanel controlPanel = new JPanel();
-        controlPanel.add(new JLabel("Select Channel: "));
-        controlPanel.add(channelComboBox);
-        controlPanel.add(showScheduleButton);
-
         table = new JTable(new DefaultTableModel(new Object[]{"Program", "Start Time", "End Time"}, 0));
 
         JScrollPane tableScrollPane = new JScrollPane(table);
 
-        mainPanel.add(controlPanel, BorderLayout.NORTH);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
 
         frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
