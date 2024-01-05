@@ -20,14 +20,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This controller class is responsible for all API communication and uses the
+ * model classes to display information in the GUI.
+ */
 public class ApiController {
 
+    // Lists to categorize channels based on their names
     public List<Channel> p1 = new ArrayList<>();
     public List<Channel> p2 = new ArrayList<>();
     public List<Channel> p3 = new ArrayList<>();
     public List<Channel> p4 = new ArrayList<>();
     public List<Channel> other = new ArrayList<>();
 
+    /**
+     * Fetches channel information from the API, categorizes channels, and loads them into lists.
+     */
     public void loadChannels() {
         List<Channel> channels = getChannels();
 
@@ -36,6 +44,11 @@ public class ApiController {
         }
     }
 
+    /**
+     * Filters and adds a channel to the appropriate list based on its name.
+     *
+     * @param channel The channel to be categorized and added to a list.
+     */
     private void filterAndAddChannel(Channel channel) {
         String channelName = channel.getName();
         if (channelName.contains("P1")) {
@@ -51,6 +64,11 @@ public class ApiController {
         }
     }
 
+    /**
+     * Retrieves a list of radio channels from the API.
+     *
+     * @return A list of Channel objects representing radio channels.
+     */
     public static List<Channel> getChannels() {
         List<Channel> channels = new ArrayList<>();
         try {
@@ -63,6 +81,13 @@ public class ApiController {
         return channels;
     }
 
+    /**
+     * Sends an HTTP GET request to the specified URL and returns the response as a string.
+     *
+     * @param apiUrl The URL to send the GET request to.
+     * @return The response as a string.
+     * @throws Exception If an error occurs during the HTTP request.
+     */
     private static String sendGetRequest(String apiUrl) throws Exception {
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -82,6 +107,12 @@ public class ApiController {
         }
     }
 
+    /**
+     * Parses XML data to extract information about radio channels.
+     *
+     * @param xmlString The XML data to be parsed.
+     * @return A list of Channel objects representing radio channels.
+     */
     private static List<Channel> parseXmlChannels(String xmlString) {
         List<Channel> channels = new ArrayList<>();
 
@@ -107,6 +138,12 @@ public class ApiController {
         return channels;
     }
 
+    /**
+     * Retrieves the schedule of programs for a given channel ID from the API.
+     *
+     * @param channelId The ID of the channel for which to retrieve the schedule.
+     * @return A list of Program objects representing the schedule of programs for the channel.
+     */
     public static List<Program> getSchedule(int channelId) {
         List<Program> programs = new ArrayList<>();
         try {
@@ -119,6 +156,12 @@ public class ApiController {
         return programs;
     }
 
+    /**
+     * Parses XML data to extract information about radio programs.
+     *
+     * @param xmlString The XML data to be parsed.
+     * @return A list of Program objects representing radio programs.
+     */
     private static List<Program> parseXmlPrograms(String xmlString) {
         List<Program> programs = new ArrayList<>();
 
@@ -153,6 +196,13 @@ public class ApiController {
         return programs;
     }
 
+    /**
+     * Filters radio programs based on their start and end times.
+     *
+     * @param startTime The start time of the program.
+     * @param endTime   The end time of the program.
+     * @return True if the program should be included; false otherwise.
+     */
     private static boolean filterProgram(LocalDateTime startTime, LocalDateTime endTime) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime filterStartTime = now.minusHours(12);
