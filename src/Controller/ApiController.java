@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Controller {
+public class ApiController {
 
     public List<Channel> p1 = new ArrayList<>();
     public List<Channel> p2 = new ArrayList<>();
@@ -37,13 +37,14 @@ public class Controller {
     }
 
     private void filterAndAddChannel(Channel channel) {
-        if (channel.getName().contains("P1")) {
+        String channelName = channel.getName();
+        if (channelName.contains("P1")) {
             p1.add(channel);
-        } else if (channel.getName().contains("P2")) {
+        } else if (channelName.contains("P2")) {
             p2.add(channel);
-        } else if (channel.getName().contains("P3")) {
+        } else if (channelName.contains("P3")) {
             p3.add(channel);
-        } else if (channel.getName().contains("P4")) {
+        } else if (channelName.contains("P4")) {
             p4.add(channel);
         } else {
             other.add(channel);
@@ -53,8 +54,8 @@ public class Controller {
     public static List<Channel> getChannels() {
         List<Channel> channels = new ArrayList<>();
         try {
-            String url = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
-            String response = sendGetRequest(url);
+            String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
+            String response = sendGetRequest(apiUrl);
             channels = parseXmlChannels(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,26 +68,25 @@ public class Controller {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            StringBuilder response = new StringBuilder();
+            String line;
 
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            return response.toString();
+        } finally {
+            connection.disconnect();
         }
-
-        reader.close();
-        connection.disconnect();
-
-        return response.toString();
     }
 
     private static List<Channel> parseXmlChannels(String xmlString) {
         List<Channel> channels = new ArrayList<>();
 
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(xmlString)));
 
             NodeList channelNodes = doc.getElementsByTagName("channel");
@@ -110,8 +110,8 @@ public class Controller {
     public static List<Program> getSchedule(int channelId) {
         List<Program> programs = new ArrayList<>();
         try {
-            String url = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
-            String response = sendGetRequest(url);
+            String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
+            String response = sendGetRequest(apiUrl);
             programs = parseXmlPrograms(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,8 +123,7 @@ public class Controller {
         List<Program> programs = new ArrayList<>();
 
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(xmlString)));
 
             NodeList scheduleNodes = doc.getElementsByTagName("scheduledepisode");
@@ -132,30 +131,22 @@ public class Controller {
             for (int i = 0; i < scheduleNodes.getLength(); i++) {
                 Element scheduleElement = (Element) scheduleNodes.item(i);
 
-                // Retrieve information from XML
                 String name = scheduleElement.getElementsByTagName("title").item(0).getTextContent();
-
-                // Check for null before accessing description
                 Node descriptionNode = scheduleElement.getElementsByTagName("description").item(0);
                 String description = (descriptionNode != null) ? descriptionNode.getTextContent() : "";
-
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
                 LocalDateTime startTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("starttimeutc").item(0).getTextContent(), formatter);
                 LocalDateTime endTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("endtimeutc").item(0).getTextContent(), formatter);
                 int programId = Integer.parseInt(scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id").getTextContent());
-
-                // Check for null before accessing imageurl
                 Node imageUrlNode = scheduleElement.getElementsByTagName("imageurl").item(0);
                 String imageUrl = (imageUrlNode != null) ? imageUrlNode.getTextContent() : "";
 
-                // Filter programs based on time
                 if (filterProgram(startTime, endTime)) {
                     Program program = new Program(programId, name, description, startTime, endTime, imageUrl);
                     programs.add(program);
                 }
             }
         } catch (Exception e) {
-            // Handle exceptions
             e.printStackTrace();
         }
 
@@ -164,15 +155,9 @@ public class Controller {
 
     private static boolean filterProgram(LocalDateTime startTime, LocalDateTime endTime) {
         LocalDateTime now = LocalDateTime.now();
-
-        // Calculate the start and end times for the filter (12 hours before and after the last API call time)
         LocalDateTime filterStartTime = now.minusHours(12);
         LocalDateTime filterEndTime = now.plusHours(12);
-
-        // Check if the program falls within the filter time range
         return (startTime.isAfter(filterStartTime) || startTime.isEqual(filterStartTime)) &&
                 (endTime.isBefore(filterEndTime) || endTime.isEqual(filterEndTime));
     }
-
-
 }

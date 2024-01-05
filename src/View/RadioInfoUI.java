@@ -1,6 +1,6 @@
 package View;
 
-import Controller.Controller;
+import Controller.ApiController;
 import Model.Channel;
 import Model.Program;
 
@@ -59,7 +59,7 @@ public class RadioInfoUI {
 
         createMenu(menuBar, "Help", "Help", e -> showHelpDialog());
 
-        Controller ctrl = new Controller();
+        ApiController ctrl = new ApiController();
         ctrl.loadChannels();
 
         createChannelMenu(menuBar, "P1", ctrl.p1);
@@ -206,7 +206,7 @@ public class RadioInfoUI {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
-        programList = Controller.getSchedule(channelId);
+        programList = ApiController.getSchedule(channelId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
