@@ -194,7 +194,9 @@ public class RadioInfoUI {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
-        programList = ApiController.getSchedule(channelId);
+        ApiController ctrl = new ApiController();
+
+        programList = ctrl.getSchedule(channelId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
