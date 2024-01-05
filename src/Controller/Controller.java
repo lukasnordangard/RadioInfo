@@ -95,10 +95,8 @@ public class Controller {
                 Element channelElement = (Element) channelNodes.item(i);
                 int channelId = Integer.parseInt(channelElement.getAttribute("id"));
                 String channelName = channelElement.getAttribute("name");
-                Node imageNode = channelElement.getElementsByTagName("image").item(0);
-                String imageURL = (imageNode != null) ? imageNode.getTextContent() : null;
 
-                Channel channel = new Channel(channelId, channelName, imageURL);
+                Channel channel = new Channel(channelId, channelName);
                 channels.add(channel);
             }
 
