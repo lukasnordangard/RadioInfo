@@ -133,7 +133,7 @@ public class RadioInfoUI {
             JPanel imagePanel = createImagePanel(selectedProgram);
             JScrollPane descriptionTextArea = createDescriptionTextArea(selectedProgram);
 
-            addInfoLabel(infoLabelsPanel, "Program ID:", String.valueOf(selectedProgram.getProgramId()));
+            addInfoLabel(infoLabelsPanel, "Program ID:", String.valueOf(selectedProgram.getId()));
             addInfoLabel(infoLabelsPanel, "Name:", selectedProgram.getName());
             addInfoLabel(infoLabelsPanel, "Start Time:", selectedProgram.getStartTime().toString());
             addInfoLabel(infoLabelsPanel, "End Time:", selectedProgram.getEndTime().toString());
@@ -195,7 +195,7 @@ public class RadioInfoUI {
 
     private Program getProgramById(int programId) {
         for (Program program : programList) {
-            if (program.getProgramId() == programId) {
+            if (program.getId() == programId) {
                 return program;
             }
         }
@@ -214,7 +214,7 @@ public class RadioInfoUI {
             Object[] rowData = new Object[]{program.getName(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
             model.addRow(rowData);
 
-            int programId = program.getProgramId();
+            int programId = program.getId();
             int rowIndex = model.getRowCount() - 1;
             table.getSelectionModel().addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting() && table.getSelectedRow() == rowIndex) {

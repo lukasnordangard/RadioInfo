@@ -2,16 +2,32 @@ package Model;
 
 import java.time.LocalDateTime;
 
+/**
+ * This is a model class that represent a basic structure for storing
+ * information about a radio program.
+ */
 public class Program {
-    private final int programId;
+
+    // Attributes
+    private final int id;
     private final String name;
     private final String description;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final String imageUrl;
 
-    public Program(int programId, String name, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
-        this.programId = programId;
+    /**
+     * Constructor method that constructs the program model.
+     *
+     * @param id The unique identifier of the program.
+     * @param name The name of the program.
+     * @param description a description of the program.
+     * @param startTime The start time of the program.
+     * @param endTime The end time of the program.
+     * @param imageUrl a url to the image of the program.
+     */
+    public Program(int id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.startTime = startTime;
@@ -19,26 +35,56 @@ public class Program {
         this.imageUrl = imageUrl;
     }
 
-    public int getProgramId() {
-        return programId;
+    /**
+     * Gets the ID of the program.
+     *
+     * @return The ID of the program.
+     */
+    public int getId() {
+        return id;
     }
 
+    /**
+     * Gets the name of the program.
+     *
+     * @return The name of the program.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the description of the program.
+     *
+     * @return The description of the program.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Gets the start time of the program.
+     *
+     * @return The start time of the program.
+     */
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    /**
+     * Gets the end time of the program.
+     *
+     * @return The end time of the program.
+     */
     public LocalDateTime getEndTime() {
         return endTime;
     }
 
+    /**
+     * Gets the image url of the program.
+     *
+     * @return The image url of the program.
+     */
     public String getImageUrl() {
         return imageUrl;
     }

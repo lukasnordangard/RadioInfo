@@ -180,12 +180,12 @@ public class ApiController {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
                 LocalDateTime startTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("starttimeutc").item(0).getTextContent(), formatter);
                 LocalDateTime endTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("endtimeutc").item(0).getTextContent(), formatter);
-                int programId = Integer.parseInt(scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id").getTextContent());
+                int id = Integer.parseInt(scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id").getTextContent());
                 Node imageUrlNode = scheduleElement.getElementsByTagName("imageurl").item(0);
                 String imageUrl = (imageUrlNode != null) ? imageUrlNode.getTextContent() : "";
 
                 if (filterProgram(startTime, endTime)) {
-                    Program program = new Program(programId, name, description, startTime, endTime, imageUrl);
+                    Program program = new Program(id, name, description, startTime, endTime, imageUrl);
                     programs.add(program);
                 }
             }
