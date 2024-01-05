@@ -122,7 +122,7 @@ public class RadioInfoUI {
         mainPanel.add(programDetailsLabel);
     }
 
-    private void showMoreClicked(int programId) {
+    private void showProgramInfo(int programId) {
         Program selectedProgram = getProgramById(programId);
 
         programDetailsLabel.removeAll();
@@ -218,7 +218,7 @@ public class RadioInfoUI {
             int rowIndex = model.getRowCount() - 1;
             table.getSelectionModel().addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting() && table.getSelectedRow() == rowIndex) {
-                    showMoreClicked(programId);
+                    showProgramInfo(programId);
                 }
             });
         }
