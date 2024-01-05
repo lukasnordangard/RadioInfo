@@ -6,14 +6,14 @@ import Model.Program;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class RadioInfoUI {
     private JFrame frame;
     private JTable table;
-    //private JButton showMoreButton;
-    private JButton hideButton;
     private JLabel programDetailsLabel;
 
     private List<Program> programList;
@@ -138,60 +138,99 @@ public class RadioInfoUI {
     }
 
     private void createMainPanel() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new GridLayout(1, 2)); // One row, two columns
 
+        // Left side: Table
         table = new JTable(new DefaultTableModel(new Object[]{"Program", "Start Time", "End Time"}, 0));
-
         JScrollPane tableScrollPane = new JScrollPane(table);
+        mainPanel.add(tableScrollPane);
 
-        mainPanel.add(tableScrollPane, BorderLayout.CENTER);
-
-        // Create and add the "Show More" button
-        //showMoreButton = new JButton("Show More");
-        //showMoreButton.addActionListener(e -> showMoreClicked());
-
-        // Create a "Hide" button
-        hideButton = new JButton("Hide");
-        hideButton.addActionListener(e -> hideClicked());
-
-        // Create a label to display program details
+        // Right side: Program details
         programDetailsLabel = new JLabel();
         programDetailsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Create a panel to hold the buttons
-        JPanel buttonPanel = new JPanel();
-        //buttonPanel.add(showMoreButton);
-        buttonPanel.add(hideButton);
-
-        // Add components to the main panel
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        mainPanel.add(programDetailsLabel, BorderLayout.EAST);
+        programDetailsLabel.setLayout(new GridBagLayout());
+        mainPanel.add(programDetailsLabel);
 
         frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
 
+
     private void showMoreClicked(int programId) {
         Program selectedProgram = getProgramById(programId);
 
-        if (selectedProgram != null) {
-            // Display program details to the right of the table
-            String detailsText = "<html><p><b>Selected Program:</b></p><br>"
-                    + "Description: " + selectedProgram.getDescription() + "<br>";
+        // Clear the program details label
+        programDetailsLabel.removeAll();
 
-            // Check if the imageUrl is not empty
+        if (selectedProgram != null) {
+            // Create a panel to hold the information labels
+            JPanel infoLabelsPanel = new JPanel(new GridLayout(0, 1));
+
+            // Create a panel to hold the image
+            JPanel imagePanel = new JPanel();
             if (selectedProgram.getImageUrl() != null && !selectedProgram.getImageUrl().isEmpty()) {
-                detailsText += "Image URL: <br><img src='" + selectedProgram.getImageUrl() + "' width='200' height='200'>";
+                try {
+                    // Load image from URL
+                    ImageIcon originalIcon = new ImageIcon(new URL(selectedProgram.getImageUrl()));
+
+                    // Resize the image while preserving its aspect ratio
+                    int targetSize = 250;
+                    ImageIcon resizedIcon = resizeImage(originalIcon, targetSize, targetSize);
+
+                    JLabel imageLabel = new JLabel(resizedIcon);
+                    imagePanel.add(imageLabel);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
 
-            detailsText += "</html>";
+            // Create a panel to hold the description text area
+            JTextArea descriptionTextArea = new JTextArea(selectedProgram.getDescription());
+            descriptionTextArea.setLineWrap(true);
+            descriptionTextArea.setWrapStyleWord(true);
+            descriptionTextArea.setEditable(false);
 
-            programDetailsLabel.setText(detailsText);
+            // Set preferred size for the description text area
+            descriptionTextArea.setPreferredSize(new Dimension(250, 100)); // Adjust the size as needed
+
+            JScrollPane descriptionScrollPane = new JScrollPane(descriptionTextArea);
+
+            // Add information labels
+            addInfoLabel(infoLabelsPanel, "Program ID:", String.valueOf(selectedProgram.getProgramId()));
+            addInfoLabel(infoLabelsPanel, "Name:", selectedProgram.getName());
+            addInfoLabel(infoLabelsPanel, "Start Time:", selectedProgram.getStartTime().toString());
+            addInfoLabel(infoLabelsPanel, "End Time:", selectedProgram.getEndTime().toString());
+
+            // Create a panel to hold everything on the right side
+            JPanel rightPanel = new JPanel(new BorderLayout());
+            rightPanel.add(imagePanel, BorderLayout.NORTH);
+            rightPanel.add(descriptionScrollPane, BorderLayout.CENTER);
+            rightPanel.add(infoLabelsPanel, BorderLayout.SOUTH);
+
+            // Add the right panel to programDetailsLabel
+            programDetailsLabel.add(rightPanel);
+
+            // Refresh the layout
+            programDetailsLabel.revalidate();
+            programDetailsLabel.repaint();
         } else {
-            // Clear the program details label if no program is selected
-            programDetailsLabel.setText("");
+            // Refresh the layout even if no program is selected
+            programDetailsLabel.revalidate();
+            programDetailsLabel.repaint();
         }
     }
 
+    // Helper method to resize an ImageIcon while preserving its aspect ratio
+    private ImageIcon resizeImage(ImageIcon icon, int targetWidth, int targetHeight) {
+        Image img = icon.getImage();
+        Image resizedImg = img.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImg);
+    }
+
+    // Helper method to add an information label to the panel
+    private void addInfoLabel(JPanel panel, String label, String value) {
+        JLabel infoLabel = new JLabel(label + " " + value);
+        panel.add(infoLabel);
+    }
 
     // Helper method to retrieve a program by its ID
     private Program getProgramById(int programId) {
@@ -204,11 +243,6 @@ public class RadioInfoUI {
             }
         }
         return null;
-    }
-
-    private void hideClicked() {
-        // Clear the program details label when "Hide" button is clicked
-        programDetailsLabel.setText("");
     }
 
     private void displayChannelSchedule(int channelId) {
@@ -233,6 +267,5 @@ public class RadioInfoUI {
             });
         }
     }
-
 
 }
