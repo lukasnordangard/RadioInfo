@@ -1,6 +1,7 @@
 package View;
 
 import Controller.ApiController;
+import Controller.GuiController;
 import Model.Channel;
 import Model.Program;
 
@@ -57,7 +58,7 @@ public class RadioInfoUI {
 
         createMenu(menuBar, "File", "Exit", e -> System.exit(0));
 
-        createMenu(menuBar, "Help", "Help", e -> showHelpDialog());
+        createMenu(menuBar, "Help", "Help", e -> GuiController.showHelpDialog(frame));
 
         ApiController ctrl = new ApiController();
         ctrl.loadChannels();
@@ -88,16 +89,6 @@ public class RadioInfoUI {
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);
-    }
-
-    private void showHelpDialog() {
-        String helpMessage = "Welcome to RadioInfoUI!\n\n"
-                + "This application allows you to view channel schedules.\n"
-                + "To get started, select a channel from the menu to display its schedule.\n"
-                + "You can also click on a program in the table to view more information.\n\n"
-                + "For further assistance, contact support.";
-
-        JOptionPane.showMessageDialog(frame, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void createMainPanel() {
@@ -141,12 +132,9 @@ public class RadioInfoUI {
             JPanel rightPanel = createRightPanel(imagePanel, descriptionTextArea, infoLabelsPanel);
             programDetailsLabel.add(rightPanel);
 
-            programDetailsLabel.revalidate();
-            programDetailsLabel.repaint();
-        } else {
-            programDetailsLabel.revalidate();
-            programDetailsLabel.repaint();
         }
+        programDetailsLabel.revalidate();
+        programDetailsLabel.repaint();
     }
 
     private JPanel createRightPanel(JPanel imagePanel, JScrollPane descriptionScrollPane, JPanel infoLabelsPanel) {
