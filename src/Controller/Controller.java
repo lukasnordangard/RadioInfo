@@ -144,6 +144,7 @@ public class Controller {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
                 LocalDateTime startTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("starttimeutc").item(0).getTextContent(), formatter);
                 LocalDateTime endTime = LocalDateTime.parse(scheduleElement.getElementsByTagName("endtimeutc").item(0).getTextContent(), formatter);
+                int programId = Integer.parseInt(scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id").getTextContent());
 
                 // Check for null before accessing imageurl
                 Node imageUrlNode = scheduleElement.getElementsByTagName("imageurl").item(0);
@@ -151,12 +152,8 @@ public class Controller {
 
                 // Filter programs based on time
                 if (filterProgram(startTime, endTime)) {
-                    Program program = new Program(name, description, startTime, endTime, imageUrl);
+                    Program program = new Program(programId, name, description, startTime, endTime, imageUrl);
                     programs.add(program);
-                    System.out.println("name: " + name);
-                    System.out.println("description: " + description);
-                    System.out.println("imageUrl: " + imageUrl);
-                    System.out.println("===================");
                 }
             }
         } catch (Exception e) {
