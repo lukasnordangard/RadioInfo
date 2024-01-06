@@ -47,14 +47,31 @@ public class GuiController {
         gui.createMenu(menuBar, "File", "Exit", e -> System.exit(0));
         gui.createMenu(menuBar, "Help", "Help", e -> showHelpDialog(gui.getFrame()));
 
-        apiCtrl.loadChannels();
-        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
-        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
-        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
-        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
-        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
 
-        gui.getFrame().setJMenuBar(menuBar);
+        SwingWorker<Void, Void> loadChannelsWorker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                System.out.println("loadChannels");
+                apiCtrl.loadChannels();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                System.out.println("createChannelMenu");
+
+                createChannelMenu(menuBar, "P1", apiCtrl.getP1());
+                createChannelMenu(menuBar, "P2", apiCtrl.getP2());
+                createChannelMenu(menuBar, "P3", apiCtrl.getP3());
+                createChannelMenu(menuBar, "P4", apiCtrl.getP4());
+                createChannelMenu(menuBar, "Other", apiCtrl.getOther());
+
+                gui.getFrame().setJMenuBar(menuBar);
+
+                System.out.println("=======================");
+            }
+        };
+        loadChannelsWorker.execute();
     }
 
     public void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {

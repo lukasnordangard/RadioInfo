@@ -89,6 +89,9 @@ public class ApiController {
         try {
             String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
             String response = sendGetRequest(apiUrl);
+
+            System.out.println("getChannels");
+
             channels = parser.parseChannels(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,11 +136,14 @@ public class ApiController {
     public List<Program> getSchedule(int channelId) {
         List<Program> programs = new ArrayList<>();
 
-        sleep();
+        //sleep();
 
         try {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
             String response = sendGetRequest(apiUrl);
+
+            System.out.println("getSchedule");
+
             programs = parser.parsePrograms(response);
         } catch (Exception e) {
             e.printStackTrace();
