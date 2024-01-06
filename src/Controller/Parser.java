@@ -42,8 +42,11 @@ public class Parser {
                 int channelId = parseChannelId(channelElement);
                 String channelName = parseChannelName(channelElement);
 
-                Channel channel = new Channel(channelId, channelName);
-                channels.add(channel);
+                // Handle if id is missing
+                if (channelId != -1){
+                    Channel channel = new Channel(channelId, channelName);
+                    channels.add(channel);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +63,7 @@ public class Parser {
      */
     private int parseChannelId(Element channelElement) {
         Node idNode = channelElement.getAttributeNode("id");
-        return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1; // Handle if id is missing
+        return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1;
     }
 
     /**
@@ -71,7 +74,7 @@ public class Parser {
      */
     private String parseChannelName(Element channelElement) {
         Node nameNode = channelElement.getAttributeNode("name");
-        return (nameNode != null) ? nameNode.getTextContent() : "Missing Channel Name";
+        return (nameNode != null) ? nameNode.getTextContent() : "MISSING CHANNEL NAME";
     }
 
     /**
@@ -99,7 +102,8 @@ public class Parser {
                 LocalDateTime endTime = parseProgramEndTime(scheduleElement);
                 String imageUrl = parseProgramImageUrl(scheduleElement);
 
-                if (filterProgram(startTime, endTime)) {
+                // Filter programs after time and handle if id is missing
+                if (filterProgram(startTime, endTime) && id != -1) {
                     Program program = new Program(id, title, description, startTime, endTime, imageUrl);
                     programs.add(program);
                 }
@@ -130,7 +134,7 @@ public class Parser {
      */
     private String parseProgramTitle(Element scheduleElement) {
         Node titleNode = scheduleElement.getElementsByTagName("title").item(0);
-        return (titleNode != null) ? titleNode.getTextContent() : "Missing Title";
+        return (titleNode != null) ? titleNode.getTextContent() : "MISSING PROGRAM TITLE";
     }
 
     /**
@@ -141,7 +145,7 @@ public class Parser {
      */
     private String parseProgramDescription(Element scheduleElement) {
         Node descriptionNode = scheduleElement.getElementsByTagName("description").item(0);
-        return (descriptionNode != null) ? descriptionNode.getTextContent() : "Missing Description";
+        return (descriptionNode != null) ? descriptionNode.getTextContent() : "MISSING PROGRAM DESCRIPTION";
     }
 
     /**
@@ -194,7 +198,7 @@ public class Parser {
      */
     private String parseProgramImageUrl(Element scheduleElement) {
         Node imageUrlNode = scheduleElement.getElementsByTagName("imageurl").item(0);
-        return (imageUrlNode != null) ? imageUrlNode.getTextContent() : "";//Missing Image
+        return (imageUrlNode != null) ? imageUrlNode.getTextContent() : ""; // MISSING PROGRAM IMAGE
     }
 
     /**
