@@ -104,7 +104,7 @@ public class GuiController {
      * updates Swing components using the 'updateTable' method on the EDT.
      */
     public synchronized void startTimer(int channelId) {
-        int updateTime = 10;
+        int updateTime = 60;
 
         // Cancel the current TimerTask if it exists
         if (currentTimerTask != null) {
@@ -133,7 +133,7 @@ public class GuiController {
         };
 
         // Schedule the new TimerTask
-        timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.SECONDS.toMillis(updateTime));
+        timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.MINUTES.toMillis(updateTime));
     }
 
 
