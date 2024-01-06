@@ -13,9 +13,8 @@ import java.util.concurrent.TimeUnit;
 public class GuiController {
 
     private final ApiController apiCtrl = new ApiController();
-    private Timer timer;
-    private final int updateTime = 60;
-    private RadioInfoUI gui;
+    private final Timer timer;
+    private final RadioInfoUI gui;
 
     public GuiController(RadioInfoUI gui){
         this.timer = new Timer();
@@ -49,6 +48,7 @@ public class GuiController {
      * updates Swing components using the 'updateTable' method on the EDT.
      */
     public void startTimer(int channelId) {
+        int updateTime = 60;
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
