@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Channel;
 import Model.Program;
 import View.RadioInfoUI;
 
@@ -35,10 +36,36 @@ public class GuiController {
 
     public void createAndShowGUI() {
         gui.initializeFrame();
-        gui.createMenuBar();
+        createMenuBar();
         gui.createMainPanel();
-        gui.centerFrame();
         gui.getFrame().setVisible(true);
+    }
+
+    public void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        gui.createMenu(menuBar, "File", "Exit", e -> System.exit(0));
+        gui.createMenu(menuBar, "Help", "Help", e -> showHelpDialog(gui.getFrame()));
+
+        apiCtrl.loadChannels();
+        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
+        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
+        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
+        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
+        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
+
+        gui.getFrame().setJMenuBar(menuBar);
+    }
+
+    public void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
+        JMenu channelMenu = new JMenu(menuName);
+        for (Channel channel : channels) {
+            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
+            int id = channel.getId();
+            channelMenuItem.addActionListener(e -> startTimer(id));
+            channelMenu.add(channelMenuItem);
+        }
+        menuBar.add(channelMenu);
     }
 
 
@@ -111,7 +138,8 @@ public class GuiController {
             int rowIndex = model.getRowCount() - 1;
             gui.getTable().getSelectionModel().addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting() && gui.getTable().getSelectedRow() == rowIndex) {
-                    gui.showProgramInfo(programId);
+                    Program selectedProgram = getProgramById(programId);
+                    gui.showProgramInfo(selectedProgram);
                 }
             });
         }

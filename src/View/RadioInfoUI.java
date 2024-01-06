@@ -1,8 +1,5 @@
 package View;
 
-import Controller.ApiController;
-import Controller.GuiController;
-import Model.Channel;
 import Model.Program;
 
 import javax.swing.*;
@@ -11,20 +8,14 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 public class RadioInfoUI {
 
-    private final ApiController apiCtrl;
-    private final GuiController guiCtrl;
     private JFrame frame;
     private JTable table;
     private JLabel programDetailsLabel;
 
-    public RadioInfoUI() {
-        this.apiCtrl = new ApiController();
-        this.guiCtrl = new GuiController(this);
-    }
+    public RadioInfoUI() { }
 
     public JFrame getFrame(){
         return frame;
@@ -39,55 +30,25 @@ public class RadioInfoUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 720);
         frame.setLocationRelativeTo(null);
+        centerFrame();
     }
 
-    public void centerFrame() {
+    private void centerFrame() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int screenWidth = screenSize.width;
-        int screenHeight = screenSize.height;
 
-        int frameWidth = frame.getWidth();
-        int frameHeight = frame.getHeight();
-
-        int x = (screenWidth - frameWidth) / 2;
-        int y = (screenHeight - frameHeight) / 2;
+        int x = (screenSize.width - frame.getWidth()) / 2;
+        int y = (screenSize.height - frame.getHeight()) / 2;
 
         frame.setLocation(x, y);
     }
 
-    public void createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
 
-        createMenu(menuBar, "File", "Exit", e -> System.exit(0));
-        createMenu(menuBar, "Help", "Help", e -> guiCtrl.showHelpDialog(frame));
-
-        apiCtrl.loadChannels();
-        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
-        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
-        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
-        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
-        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
-
-        frame.setJMenuBar(menuBar);
-    }
-
-    private void createMenu(JMenuBar menuBar, String menuName, String menuItemName, ActionListener actionListener) {
+    public void createMenu(JMenuBar menuBar, String menuName, String menuItemName, ActionListener actionListener) {
         JMenu menu = new JMenu(menuName);
         JMenuItem menuItem = new JMenuItem(menuItemName);
         menuItem.addActionListener(actionListener);
         menu.add(menuItem);
         menuBar.add(menu);
-    }
-
-    private void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
-        JMenu channelMenu = new JMenu(menuName);
-        for (Channel channel : channels) {
-            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
-            int id = channel.getId();
-            channelMenuItem.addActionListener(e -> guiCtrl.startTimer(id));
-            channelMenu.add(channelMenuItem);
-        }
-        menuBar.add(channelMenu);
     }
 
     public void createMainPanel() {
@@ -112,8 +73,7 @@ public class RadioInfoUI {
         mainPanel.add(programDetailsLabel);
     }
 
-    public void showProgramInfo(int programId) {
-        Program selectedProgram = guiCtrl.getProgramById(programId);
+    public void showProgramInfo(Program selectedProgram) {
 
         programDetailsLabel.removeAll();
 
