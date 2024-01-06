@@ -130,6 +130,13 @@ public class ApiController {
      */
     public List<Program> getSchedule(int channelId) {
         List<Program> programs = new ArrayList<>();
+
+        try{
+            Thread.sleep(5000);
+        }catch (InterruptedException e){
+
+        }
+
         try {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
             String response = sendGetRequest(apiUrl);

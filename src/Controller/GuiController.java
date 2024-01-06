@@ -47,18 +47,19 @@ public class GuiController {
      * occurs without blocking the graphical interface. The timer task periodically
      * updates Swing components using the 'updateTable' method on the EDT.
      */
-    public void startTimer(int channelId) {
+    public synchronized void startTimer(int channelId) {
         int updateTime = 60;
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                SwingUtilities.invokeLater(() -> updateTable(channelId));
+                updateTable(channelId);
+                System.out.println("updateTable");
             }
         };
         timer.scheduleAtFixedRate(timerTask,0, TimeUnit.MINUTES.toMillis(updateTime));
     }
 
-    private void updateTable(int channelId) {
+    public void updateTable(int channelId) {
         displayChannelSchedule(channelId);
     }
 

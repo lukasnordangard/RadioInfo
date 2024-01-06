@@ -8,6 +8,7 @@ import Model.Program;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -93,7 +94,23 @@ public class RadioInfoUI {
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             int id = channel.getId();
-            channelMenuItem.addActionListener(e -> guiCtrl.startTimer(id));
+            channelMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int id = channel.getId();
+                    // Create a SwingWorker to run the updateSchedule method on a separate thread
+                    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                        @Override
+                        protected Void doInBackground() throws Exception {
+                            guiCtrl.startTimer(id);
+                            return null;
+                        }
+                    };
+                    // Execute the SwingWorker
+                    worker.execute();
+                }
+            });
+
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);
