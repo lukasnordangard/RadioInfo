@@ -51,11 +51,23 @@ public class Parser {
         return channels;
     }
 
+    /**
+     * Parses the channel ID from the given channelElement.
+     *
+     * @param channelElement The XML element representing a radio channel.
+     * @return The parsed channel ID.
+     */
     private int parseChannelId(Element channelElement) {
         Node idNode = channelElement.getAttributeNode("id");
         return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1; // Handle if id is missing
     }
 
+    /**
+     * Parses the channel name from the given channelElement.
+     *
+     * @param channelElement The XML element representing a radio channel.
+     * @return The parsed channel name.
+     */
     private String parseChannelName(Element channelElement) {
         Node nameNode = channelElement.getAttributeNode("name");
         return (nameNode != null) ? nameNode.getTextContent() : "Missing Channel Name";
@@ -98,33 +110,69 @@ public class Parser {
         return programs;
     }
 
+    /**
+     * Parses the program ID from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program ID.
+     */
     private int parseProgramId(Element scheduleElement) {
         Node idNode = scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id");
         return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1;
     }
 
+    /**
+     * Parses the program title from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program title.
+     */
     private String parseProgramTitle(Element scheduleElement) {
         Node titleNode = scheduleElement.getElementsByTagName("title").item(0);
         return (titleNode != null) ? titleNode.getTextContent() : "Missing Title";
     }
 
+    /**
+     * Parses the program description from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program description.
+     */
     private String parseProgramDescription(Element scheduleElement) {
         Node descriptionNode = scheduleElement.getElementsByTagName("description").item(0);
         return (descriptionNode != null) ? descriptionNode.getTextContent() : "Missing Description";
     }
 
+    /**
+     * Parses the program start time from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program start time.
+     */
     private LocalDateTime parseProgramStartTime(Element scheduleElement) {
         Node startTimeNode = scheduleElement.getElementsByTagName("starttimeutc").item(0);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return (startTimeNode != null) ? LocalDateTime.parse(startTimeNode.getTextContent(), formatter) : null;
     }
 
+    /**
+     * Parses the program end time from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program end time.
+     */
     private LocalDateTime parseProgramEndTime(Element scheduleElement) {
         Node endTimeNode = scheduleElement.getElementsByTagName("endtimeutc").item(0);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return (endTimeNode != null) ? LocalDateTime.parse(endTimeNode.getTextContent(), formatter) : null;
     }
 
+    /**
+     * Parses the program image URL from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program image URL.
+     */
     private String parseProgramImageUrl(Element scheduleElement) {
         Node imageUrlNode = scheduleElement.getElementsByTagName("imageurl").item(0);
         return (imageUrlNode != null) ? imageUrlNode.getTextContent() : "";//Missing Image
