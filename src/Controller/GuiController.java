@@ -22,6 +22,14 @@ public class GuiController {
         this.gui = gui;
     }
 
+    public void createAndShowGUI() {
+        gui.initializeFrame();
+        gui.createMenuBar();
+        gui.createMainPanel();
+        gui.centerFrame();
+        gui.frame.setVisible(true);
+    }
+
 
     public void showHelpDialog(JFrame frame) {
         String helpMessage = """

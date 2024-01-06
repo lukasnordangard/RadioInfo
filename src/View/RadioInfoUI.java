@@ -15,33 +15,23 @@ import java.util.List;
 
 public class RadioInfoUI {
 
-    private final ApiController apiCtrl;
+    private final ApiController apiCtrl = new ApiController();
     private final GuiController guiCtrl = new GuiController(this);
-    private JFrame frame;
+    public JFrame frame;
     public JTable table;
     private JLabel programDetailsLabel;
     public List<Program> programList;
 
-    public RadioInfoUI(ApiController apiCtrl) {
-        this.apiCtrl = apiCtrl;
-    }
+    public RadioInfoUI() {}
 
-    public void createAndShowGUI() {
-        initializeFrame();
-        createMenuBar();
-        createMainPanel();
-        centerFrame();
-        frame.setVisible(true);
-    }
-
-    private void initializeFrame() {
+    public void initializeFrame() {
         frame = new JFrame("RadioInfoUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 720);
         frame.setLocationRelativeTo(null);
     }
 
-    private void centerFrame() {
+    public void centerFrame() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidth = screenSize.width;
         int screenHeight = screenSize.height;
@@ -55,7 +45,7 @@ public class RadioInfoUI {
         frame.setLocation(x, y);
     }
 
-    private void createMenuBar() {
+    public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
         createMenu(menuBar, "File", "Exit", e -> System.exit(0));
@@ -90,7 +80,7 @@ public class RadioInfoUI {
         menuBar.add(channelMenu);
     }
 
-    private void createMainPanel() {
+    public void createMainPanel() {
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
 
         createTable(mainPanel);
