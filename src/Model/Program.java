@@ -10,7 +10,7 @@ public class Program {
 
     // Attributes
     private final int id;
-    private final String name;
+    private final String title;
     private final String description;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
@@ -20,15 +20,15 @@ public class Program {
      * Constructor method that constructs the program model.
      *
      * @param id The unique identifier of the program.
-     * @param name The name of the program.
+     * @param title The title of the program.
      * @param description a description of the program.
      * @param startTime The start time of the program.
      * @param endTime The end time of the program.
      * @param imageUrl a url to the image of the program.
      */
-    public Program(int id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
+    public Program(int id, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -49,8 +49,8 @@ public class Program {
      *
      * @return The name of the program.
      */
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     /**

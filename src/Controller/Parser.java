@@ -18,9 +18,7 @@ import java.util.List;
 
 public class Parser {
 
-    Parser(){
-
-    }
+    Parser(){ }
 
     /**
      * Parses XML data to extract information about radio channels.
@@ -39,18 +37,28 @@ public class Parser {
 
             for (int i = 0; i < channelNodes.getLength(); i++) {
                 Element channelElement = (Element) channelNodes.item(i);
-                int channelId = Integer.parseInt(channelElement.getAttribute("id"));
-                String channelName = channelElement.getAttribute("name");
+
+                int channelId = parseChannelId(channelElement);
+                String channelName = parseChannelName(channelElement);
 
                 Channel channel = new Channel(channelId, channelName);
                 channels.add(channel);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return channels;
+    }
+
+    private int parseChannelId(Element channelElement) {
+        Node idNode = channelElement.getAttributeNode("id");
+        return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1; // Handle if id is missing
+    }
+
+    private String parseChannelName(Element channelElement) {
+        Node nameNode = channelElement.getAttributeNode("name");
+        return (nameNode != null) ? nameNode.getTextContent() : "Missing Channel Name";
     }
 
     /**
@@ -71,15 +79,15 @@ public class Parser {
             for (int i = 0; i < scheduleNodes.getLength(); i++) {
                 Element scheduleElement = (Element) scheduleNodes.item(i);
 
-                int id = parseId(scheduleElement);
-                String name = parseTitle(scheduleElement);
-                String description = parseDescription(scheduleElement);
-                LocalDateTime startTime = parseStartTime(scheduleElement);
-                LocalDateTime endTime = parseEndTime(scheduleElement);
-                String imageUrl = parseImageUrl(scheduleElement);
+                int id = parseProgramId(scheduleElement);
+                String title = parseProgramTitle(scheduleElement);
+                String description = parseProgramDescription(scheduleElement);
+                LocalDateTime startTime = parseProgramStartTime(scheduleElement);
+                LocalDateTime endTime = parseProgramEndTime(scheduleElement);
+                String imageUrl = parseProgramImageUrl(scheduleElement);
 
                 if (filterProgram(startTime, endTime)) {
-                    Program program = new Program(id, name, description, startTime, endTime, imageUrl);
+                    Program program = new Program(id, title, description, startTime, endTime, imageUrl);
                     programs.add(program);
                 }
             }
@@ -90,34 +98,34 @@ public class Parser {
         return programs;
     }
 
-    private int parseId(Element scheduleElement) {
+    private int parseProgramId(Element scheduleElement) {
         Node idNode = scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id");
-        return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : Integer.parseInt(null);
+        return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1;
     }
 
-    private String parseTitle(Element scheduleElement) {
+    private String parseProgramTitle(Element scheduleElement) {
         Node titleNode = scheduleElement.getElementsByTagName("title").item(0);
         return (titleNode != null) ? titleNode.getTextContent() : "Missing Title";
     }
 
-    private String parseDescription(Element scheduleElement) {
+    private String parseProgramDescription(Element scheduleElement) {
         Node descriptionNode = scheduleElement.getElementsByTagName("description").item(0);
         return (descriptionNode != null) ? descriptionNode.getTextContent() : "Missing Description";
     }
 
-    private LocalDateTime parseStartTime(Element scheduleElement) {
+    private LocalDateTime parseProgramStartTime(Element scheduleElement) {
         Node startTimeNode = scheduleElement.getElementsByTagName("starttimeutc").item(0);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return (startTimeNode != null) ? LocalDateTime.parse(startTimeNode.getTextContent(), formatter) : null;
     }
 
-    private LocalDateTime parseEndTime(Element scheduleElement) {
+    private LocalDateTime parseProgramEndTime(Element scheduleElement) {
         Node endTimeNode = scheduleElement.getElementsByTagName("endtimeutc").item(0);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         return (endTimeNode != null) ? LocalDateTime.parse(endTimeNode.getTextContent(), formatter) : null;
     }
 
-    private String parseImageUrl(Element scheduleElement) {
+    private String parseProgramImageUrl(Element scheduleElement) {
         Node imageUrlNode = scheduleElement.getElementsByTagName("imageurl").item(0);
         return (imageUrlNode != null) ? imageUrlNode.getTextContent() : "";//Missing Image
     }

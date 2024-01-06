@@ -125,7 +125,7 @@ public class RadioInfoUI {
             JScrollPane descriptionTextArea = createDescriptionTextArea(selectedProgram);
 
             addInfoLabel(infoLabelsPanel, "Program ID:", String.valueOf(selectedProgram.getId()));
-            addInfoLabel(infoLabelsPanel, "Name:", selectedProgram.getName());
+            addInfoLabel(infoLabelsPanel, "Title:", selectedProgram.getTitle());
             addInfoLabel(infoLabelsPanel, "Start Time:", selectedProgram.getStartTime().toString());
             addInfoLabel(infoLabelsPanel, "End Time:", selectedProgram.getEndTime().toString());
 
@@ -201,7 +201,7 @@ public class RadioInfoUI {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         for (Program program : programList) {
-            Object[] rowData = new Object[]{program.getName(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
+            Object[] rowData = new Object[]{program.getTitle(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
             model.addRow(rowData);
 
             int programId = program.getId();
