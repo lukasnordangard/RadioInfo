@@ -14,9 +14,10 @@ import java.util.concurrent.TimeUnit;
 public class GuiController {
 
     private final ApiController apiCtrl = new ApiController();
-    private final Timer timer;
     private final RadioInfoUI gui;
     private List<Program> programList;
+    private final Timer timer;
+    private TimerTask currentTimerTask;
 
     public GuiController(RadioInfoUI gui){
         this.timer = new Timer();
@@ -60,7 +61,13 @@ public class GuiController {
      */
     public synchronized void startTimer(int channelId) {
         int updateTime = 10;
-        TimerTask timerTask = new TimerTask() {
+
+        // Cancel the current TimerTask if it exists
+        if (currentTimerTask != null) {
+            currentTimerTask.cancel();
+        }
+
+        currentTimerTask = new TimerTask() {
             @Override
             public void run() {
                 SwingWorker<Void, Void> updateProgramListWorker = new SwingWorker<>() {
@@ -80,8 +87,11 @@ public class GuiController {
                 updateProgramListWorker.execute();
             }
         };
-        timer.scheduleAtFixedRate(timerTask,0, TimeUnit.SECONDS.toMillis(updateTime));
+
+        // Schedule the new TimerTask
+        timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.SECONDS.toMillis(updateTime));
     }
+
 
     public void updateProgramList(int channelId) {
         programList = apiCtrl.getSchedule(channelId);
