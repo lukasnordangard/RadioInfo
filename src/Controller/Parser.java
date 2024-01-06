@@ -145,16 +145,17 @@ public class Parser {
     }
 
     /**
-     * Parses the program start time from the given scheduleElement.
+     * Parses the program time from the given scheduleElement based on the specified time key.
      *
      * @param scheduleElement The XML element representing a radio program.
-     * @return The parsed program start time.
+     * @param timeKey         The key for the time element (e.g., "starttimeutc" or "endtimeutc").
+     * @return The parsed program time.
      */
-    private LocalDateTime parseProgramStartTime(Element scheduleElement) {
-        Node startTimeNode = scheduleElement.getElementsByTagName("starttimeutc").item(0);
-        if (startTimeNode != null) {
-            String startTimeString = startTimeNode.getTextContent();
-            ZonedDateTime originalZonedDateTime = ZonedDateTime.parse(startTimeString);
+    private LocalDateTime parseProgramTime(Element scheduleElement, String timeKey) {
+        Node timeNode = scheduleElement.getElementsByTagName(timeKey).item(0);
+        if (timeNode != null) {
+            String timeString = timeNode.getTextContent();
+            ZonedDateTime originalZonedDateTime = ZonedDateTime.parse(timeString);
             ZonedDateTime adjustedZonedDateTime = originalZonedDateTime.plusHours(1);
 
             // Use ZonedDateTime directly for formatting
@@ -166,22 +167,23 @@ public class Parser {
     }
 
     /**
+     * Parses the program start time from the given scheduleElement.
+     *
+     * @param scheduleElement The XML element representing a radio program.
+     * @return The parsed program start time.
+     */
+    private LocalDateTime parseProgramStartTime(Element scheduleElement) {
+        return parseProgramTime(scheduleElement, "starttimeutc");
+    }
+
+    /**
      * Parses the program end time from the given scheduleElement.
      *
      * @param scheduleElement The XML element representing a radio program.
      * @return The parsed program end time.
      */
     private LocalDateTime parseProgramEndTime(Element scheduleElement) {
-        Node endTimeNode = scheduleElement.getElementsByTagName("endtimeutc").item(0);
-        if (endTimeNode != null) {
-            String endTimeString = endTimeNode.getTextContent();
-            ZonedDateTime endTimeZonedDateTime = ZonedDateTime.parse(endTimeString);
-            ZonedDateTime adjustedEndTime = endTimeZonedDateTime.plusHours(1);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            return LocalDateTime.parse(adjustedEndTime.format(formatter), formatter);
-        } else {
-            return null;
-        }
+        return parseProgramTime(scheduleElement, "endtimeutc");
     }
 
     /**
