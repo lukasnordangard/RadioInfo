@@ -13,8 +13,8 @@ public class Channel {
     /**
      * Constructor method that constructs the channel model.
      *
-     * @param id The unique identifier of the channel.
-     * @param name The name of the channel.
+     * @param id    The unique identifier of the channel.
+     * @param name  The name of the channel.
      */
     public Channel(int id, String name) {
         this.id = id;

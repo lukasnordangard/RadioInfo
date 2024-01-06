@@ -19,12 +19,12 @@ public class Program {
     /**
      * Constructor method that constructs the program model.
      *
-     * @param id The unique identifier of the program.
-     * @param title The title of the program.
-     * @param description a description of the program.
-     * @param startTime The start time of the program.
-     * @param endTime The end time of the program.
-     * @param imageUrl a url to the image of the program.
+     * @param id            The unique identifier of the program.
+     * @param title         The title of the program.
+     * @param description   a description of the program.
+     * @param startTime     The start time of the program.
+     * @param endTime       The end time of the program.
+     * @param imageUrl      a url to the image of the program.
      */
     public Program(int id, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
         this.id = id;
