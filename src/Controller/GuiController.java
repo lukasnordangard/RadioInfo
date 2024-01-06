@@ -27,7 +27,7 @@ public class GuiController {
         gui.createMenuBar();
         gui.createMainPanel();
         gui.centerFrame();
-        gui.frame.setVisible(true);
+        gui.getFrame().setVisible(true);
     }
 
 
@@ -63,21 +63,21 @@ public class GuiController {
     }
 
     private void displayChannelSchedule(int channelId) {
-        DefaultTableModel model = (DefaultTableModel) gui.table.getModel();
+        DefaultTableModel model = (DefaultTableModel) gui.getTable().getModel();
         model.setRowCount(0);
 
-        gui.programList = apiCtrl.getSchedule(channelId);
+        gui.setProgramList(apiCtrl.getSchedule(channelId));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        for (Program program : gui.programList) {
+        for (Program program : gui.getProgramList()) {
             Object[] rowData = new Object[]{program.getTitle(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
             model.addRow(rowData);
 
             int programId = program.getId();
             int rowIndex = model.getRowCount() - 1;
-            gui.table.getSelectionModel().addListSelectionListener(e -> {
-                if (!e.getValueIsAdjusting() && gui.table.getSelectedRow() == rowIndex) {
+            gui.getTable().getSelectionModel().addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting() && gui.getTable().getSelectedRow() == rowIndex) {
                     gui.showProgramInfo(programId);
                 }
             });

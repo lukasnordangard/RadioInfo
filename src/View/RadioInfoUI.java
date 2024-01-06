@@ -15,14 +15,33 @@ import java.util.List;
 
 public class RadioInfoUI {
 
-    private final ApiController apiCtrl = new ApiController();
-    private final GuiController guiCtrl = new GuiController(this);
-    public JFrame frame;
-    public JTable table;
+    private final ApiController apiCtrl;
+    private final GuiController guiCtrl;
+    private JFrame frame;
+    private JTable table;
     private JLabel programDetailsLabel;
-    public List<Program> programList;
+    private List<Program> programList;
 
-    public RadioInfoUI() {}
+    public RadioInfoUI() {
+        this.apiCtrl = new ApiController();
+        this.guiCtrl = new GuiController(this);
+    }
+
+    public JFrame getFrame(){
+        return frame;
+    }
+
+    public JTable getTable(){
+        return table;
+    }
+
+    public List<Program> getProgramList(){
+        return programList;
+    }
+
+    public void setProgramList(List<Program> programs){
+        this.programList = programs;
+    }
 
     public void initializeFrame() {
         frame = new JFrame("RadioInfoUI");
