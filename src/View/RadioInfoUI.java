@@ -8,7 +8,6 @@ import Model.Program;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,7 +20,6 @@ public class RadioInfoUI {
     private JFrame frame;
     private JTable table;
     private JLabel programDetailsLabel;
-    private List<Program> programList;
 
     public RadioInfoUI() {
         this.apiCtrl = new ApiController();
@@ -34,14 +32,6 @@ public class RadioInfoUI {
 
     public JTable getTable(){
         return table;
-    }
-
-    public List<Program> getProgramList(){
-        return programList;
-    }
-
-    public void setProgramList(List<Program> programs){
-        this.programList = programs;
     }
 
     public void initializeFrame() {
@@ -94,23 +84,7 @@ public class RadioInfoUI {
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             int id = channel.getId();
-            channelMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int id = channel.getId();
-                    // Create a SwingWorker to run the updateSchedule method on a separate thread
-                    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-                        @Override
-                        protected Void doInBackground() throws Exception {
-                            guiCtrl.startTimer(id);
-                            return null;
-                        }
-                    };
-                    // Execute the SwingWorker
-                    worker.execute();
-                }
-            });
-
+            channelMenuItem.addActionListener(e -> guiCtrl.startTimer(id));
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);
@@ -139,7 +113,7 @@ public class RadioInfoUI {
     }
 
     public void showProgramInfo(int programId) {
-        Program selectedProgram = getProgramById(programId);
+        Program selectedProgram = guiCtrl.getProgramById(programId);
 
         programDetailsLabel.removeAll();
 
@@ -204,15 +178,6 @@ public class RadioInfoUI {
     private void addInfoLabel(JPanel panel, String label, String value) {
         JLabel infoLabel = new JLabel(label + " " + value);
         panel.add(infoLabel);
-    }
-
-    private Program getProgramById(int programId) {
-        for (Program program : programList) {
-            if (program.getId() == programId) {
-                return program;
-            }
-        }
-        return null;
     }
 
 }

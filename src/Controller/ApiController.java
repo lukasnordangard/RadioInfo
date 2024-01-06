@@ -108,6 +108,8 @@ public class ApiController {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
+        System.out.println("Response code: " + connection.getResponseCode());
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             StringBuilder response = new StringBuilder();
             String line;
@@ -133,8 +135,8 @@ public class ApiController {
 
         try{
             Thread.sleep(5000);
-        }catch (InterruptedException e){
-
+        }catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         try {
