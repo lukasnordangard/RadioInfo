@@ -11,21 +11,19 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class RadioInfoUI {
 
     private final ApiController apiCtrl;
-    private final GuiController guiCtrl;
+    private final GuiController guiCtrl = new GuiController(this);
     private JFrame frame;
-    private JTable table;
+    public JTable table;
     private JLabel programDetailsLabel;
-    private List<Program> programList;
+    public List<Program> programList;
 
-    public RadioInfoUI(ApiController apiCtrl, GuiController guiCtrl) {
+    public RadioInfoUI(ApiController apiCtrl) {
         this.apiCtrl = apiCtrl;
-        this.guiCtrl = guiCtrl;
     }
 
     public void createAndShowGUI() {
@@ -86,7 +84,7 @@ public class RadioInfoUI {
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             int id = channel.getId();
-            channelMenuItem.addActionListener(e -> displayChannelSchedule(id));
+            channelMenuItem.addActionListener(e -> guiCtrl.startTimer(id));
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);
@@ -114,7 +112,7 @@ public class RadioInfoUI {
         mainPanel.add(programDetailsLabel);
     }
 
-    private void showProgramInfo(int programId) {
+    public void showProgramInfo(int programId) {
         Program selectedProgram = getProgramById(programId);
 
         programDetailsLabel.removeAll();
@@ -191,25 +189,4 @@ public class RadioInfoUI {
         return null;
     }
 
-    private void displayChannelSchedule(int channelId) {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setRowCount(0);
-
-        programList = apiCtrl.getSchedule(channelId);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        for (Program program : programList) {
-            Object[] rowData = new Object[]{program.getTitle(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
-            model.addRow(rowData);
-
-            int programId = program.getId();
-            int rowIndex = model.getRowCount() - 1;
-            table.getSelectionModel().addListSelectionListener(e -> {
-                if (!e.getValueIsAdjusting() && table.getSelectedRow() == rowIndex) {
-                    showProgramInfo(programId);
-                }
-            });
-        }
-    }
 }

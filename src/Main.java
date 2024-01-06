@@ -13,11 +13,11 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
         ApiController apiCtrl = new ApiController();
-        GuiController guiCtrl = new GuiController();
 
         try {
             SwingUtilities.invokeLater(() -> {
-                RadioInfoUI view = new RadioInfoUI(apiCtrl, guiCtrl);
+                RadioInfoUI view = new RadioInfoUI(apiCtrl);
+                GuiController guiCtrl = new GuiController(view);
                 view.createAndShowGUI();
             });
         } catch (Exception e) {
