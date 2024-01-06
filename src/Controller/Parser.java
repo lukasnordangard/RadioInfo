@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,8 +152,17 @@ public class Parser {
      */
     private LocalDateTime parseProgramStartTime(Element scheduleElement) {
         Node startTimeNode = scheduleElement.getElementsByTagName("starttimeutc").item(0);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        return (startTimeNode != null) ? LocalDateTime.parse(startTimeNode.getTextContent(), formatter) : null;
+        if (startTimeNode != null) {
+            String startTimeString = startTimeNode.getTextContent();
+            ZonedDateTime originalZonedDateTime = ZonedDateTime.parse(startTimeString);
+            ZonedDateTime adjustedZonedDateTime = originalZonedDateTime.plusHours(1);
+
+            // Use ZonedDateTime directly for formatting
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            return LocalDateTime.parse(adjustedZonedDateTime.format(formatter), formatter);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -163,8 +173,15 @@ public class Parser {
      */
     private LocalDateTime parseProgramEndTime(Element scheduleElement) {
         Node endTimeNode = scheduleElement.getElementsByTagName("endtimeutc").item(0);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        return (endTimeNode != null) ? LocalDateTime.parse(endTimeNode.getTextContent(), formatter) : null;
+        if (endTimeNode != null) {
+            String endTimeString = endTimeNode.getTextContent();
+            ZonedDateTime endTimeZonedDateTime = ZonedDateTime.parse(endTimeString);
+            ZonedDateTime adjustedEndTime = endTimeZonedDateTime.plusHours(1);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            return LocalDateTime.parse(adjustedEndTime.format(formatter), formatter);
+        } else {
+            return null;
+        }
     }
 
     /**
