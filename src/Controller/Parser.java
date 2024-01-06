@@ -17,9 +17,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is responsible for parsing and filtering XML data provided by
+ * the API to the model classes Channel and Program.
+ */
 public class Parser {
 
-    Parser(){ }
+    Parser(){}
 
     /**
      * Parses XML data to extract information about radio channels.

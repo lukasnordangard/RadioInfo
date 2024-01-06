@@ -71,11 +71,11 @@ public class RadioInfoUI {
         createMenu(menuBar, "Help", "Help", e -> guiCtrl.showHelpDialog(frame));
 
         apiCtrl.loadChannels();
-        createChannelMenu(menuBar, "P1", apiCtrl.p1);
-        createChannelMenu(menuBar, "P2", apiCtrl.p2);
-        createChannelMenu(menuBar, "P3", apiCtrl.p3);
-        createChannelMenu(menuBar, "P4", apiCtrl.p4);
-        createChannelMenu(menuBar, "Other", apiCtrl.other);
+        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
+        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
+        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
+        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
+        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
 
         frame.setJMenuBar(menuBar);
     }

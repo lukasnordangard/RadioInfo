@@ -17,12 +17,36 @@ import java.util.List;
 public class ApiController {
 
     // Lists to categorize channels based on their names
-    public List<Channel> p1 = new ArrayList<>();
-    public List<Channel> p2 = new ArrayList<>();
-    public List<Channel> p3 = new ArrayList<>();
-    public List<Channel> p4 = new ArrayList<>();
-    public List<Channel> other = new ArrayList<>();
-    private final Parser parser = new Parser();
+    private final List<Channel> p1 = new ArrayList<>();
+    private final List<Channel> p2 = new ArrayList<>();
+    private final List<Channel> p3 = new ArrayList<>();
+    private final List<Channel> p4 = new ArrayList<>();
+    private final List<Channel> other = new ArrayList<>();
+    private final Parser parser;
+
+    public ApiController(){
+        this.parser = new Parser();
+    }
+
+    public List<Channel> getP1(){
+        return p1;
+    }
+
+    public List<Channel> getP2(){
+        return p2;
+    }
+
+    public List<Channel> getP3(){
+        return p3;
+    }
+
+    public List<Channel> getP4(){
+        return p4;
+    }
+
+    public List<Channel> getOther(){
+        return other;
+    }
 
     /**
      * Fetches channel information from the API, categorizes channels, and loads them into lists.
