@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class GuiController {
 
-    public static void showHelpDialog(JFrame frame) {
+    public void showHelpDialog(JFrame frame) {
         String helpMessage = """
             Welcome to RadioInfoUI!
 

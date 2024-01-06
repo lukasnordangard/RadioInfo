@@ -1,3 +1,5 @@
+import Controller.ApiController;
+import Controller.GuiController;
 import View.RadioInfoUI;
 
 import javax.swing.*;
@@ -10,9 +12,12 @@ import javax.swing.*;
  */
 public class Main {
     public static void main(String[] args) {
+        ApiController apiCtrl = new ApiController();
+        GuiController guiCtrl = new GuiController();
+
         try {
             SwingUtilities.invokeLater(() -> {
-                RadioInfoUI view = new RadioInfoUI();
+                RadioInfoUI view = new RadioInfoUI(apiCtrl, guiCtrl);
                 view.createAndShowGUI();
             });
         } catch (Exception e) {

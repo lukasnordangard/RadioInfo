@@ -16,12 +16,16 @@ import java.util.List;
 
 public class RadioInfoUI {
 
+    private final ApiController apiCtrl;
+    private final GuiController guiCtrl;
     private JFrame frame;
     private JTable table;
     private JLabel programDetailsLabel;
     private List<Program> programList;
 
-    public RadioInfoUI() {
+    public RadioInfoUI(ApiController apiCtrl, GuiController guiCtrl) {
+        this.apiCtrl = apiCtrl;
+        this.guiCtrl = guiCtrl;
     }
 
     public void createAndShowGUI() {
@@ -57,17 +61,14 @@ public class RadioInfoUI {
         JMenuBar menuBar = new JMenuBar();
 
         createMenu(menuBar, "File", "Exit", e -> System.exit(0));
+        createMenu(menuBar, "Help", "Help", e -> guiCtrl.showHelpDialog(frame));
 
-        createMenu(menuBar, "Help", "Help", e -> GuiController.showHelpDialog(frame));
-
-        ApiController ctrl = new ApiController();
-        ctrl.loadChannels();
-
-        createChannelMenu(menuBar, "P1", ctrl.p1);
-        createChannelMenu(menuBar, "P2", ctrl.p2);
-        createChannelMenu(menuBar, "P3", ctrl.p3);
-        createChannelMenu(menuBar, "P4", ctrl.p4);
-        createChannelMenu(menuBar, "Other", ctrl.other);
+        apiCtrl.loadChannels();
+        createChannelMenu(menuBar, "P1", apiCtrl.p1);
+        createChannelMenu(menuBar, "P2", apiCtrl.p2);
+        createChannelMenu(menuBar, "P3", apiCtrl.p3);
+        createChannelMenu(menuBar, "P4", apiCtrl.p4);
+        createChannelMenu(menuBar, "Other", apiCtrl.other);
 
         frame.setJMenuBar(menuBar);
     }
@@ -129,15 +130,15 @@ public class RadioInfoUI {
             addInfoLabel(infoLabelsPanel, "Start Time:", selectedProgram.getStartTime().toString());
             addInfoLabel(infoLabelsPanel, "End Time:", selectedProgram.getEndTime().toString());
 
-            JPanel rightPanel = createRightPanel(imagePanel, descriptionTextArea, infoLabelsPanel);
-            programDetailsLabel.add(rightPanel);
+            JPanel infoPanel = createInfoPanel(imagePanel, descriptionTextArea, infoLabelsPanel);
+            programDetailsLabel.add(infoPanel);
 
         }
         programDetailsLabel.revalidate();
         programDetailsLabel.repaint();
     }
 
-    private JPanel createRightPanel(JPanel imagePanel, JScrollPane descriptionScrollPane, JPanel infoLabelsPanel) {
+    private JPanel createInfoPanel(JPanel imagePanel, JScrollPane descriptionScrollPane, JPanel infoLabelsPanel) {
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(imagePanel, BorderLayout.NORTH);
         rightPanel.add(descriptionScrollPane, BorderLayout.CENTER);
@@ -194,9 +195,7 @@ public class RadioInfoUI {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
-        ApiController ctrl = new ApiController();
-
-        programList = ctrl.getSchedule(channelId);
+        programList = apiCtrl.getSchedule(channelId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
