@@ -5,12 +5,9 @@ import Model.Program;
 import View.RadioInfoUI;
 
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import java.sql.Time;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Timer;
@@ -150,34 +147,41 @@ public class GuiController {
         timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.MINUTES.toMillis(updateTime));
     }
 
-
     public void updateProgramList(int channelId) {
         programList = apiCtrl.getSchedule(channelId);
     }
 
-    private ListSelectionListener listSelectionListener = new ListSelectionListener() {
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            if (!e.getValueIsAdjusting() && gui.getTable().isShowing()) {
-                int selectedRow = gui.getTable().getSelectedRow();
-                if (selectedRow != -1) {
-                    Program selectedProgram = getProgramById(programList.get(selectedRow).getId());
-                    if (selectedProgram != null) {
-                        System.out.println("SET UP PROGRAM: " + selectedProgram.getId() + " " + selectedProgram.getTitle());
-                        gui.showProgramInfo(selectedProgram);
-                    } else {
-                        System.out.println("WTF?");
-                    }
+    private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;
+
+    private void handleListSelectionEvent(ListSelectionEvent e) {
+        if (!e.getValueIsAdjusting() && gui.getTable().isShowing()) {
+            int selectedRow = gui.getTable().getSelectedRow();
+            if (selectedRow != -1) {
+                Program selectedProgram = getProgramBySelectedRow(selectedRow);
+                if (selectedProgram != null) {
+                    System.out.println("SET UP PROGRAM: " + selectedProgram.getId() + " " + selectedProgram.getTitle());
+                    gui.showProgramInfo(selectedProgram);
+                } else {
+                    System.out.println("WTF?");
                 }
             }
         }
-    };
+    }
+
+    private Program getProgramBySelectedRow(int selectedRow) {
+        return (selectedRow >= 0 && selectedRow < programList.size()) ?
+                getProgramById(programList.get(selectedRow).getId()) : null;
+    }
 
     private void clearSelectionListeners(ListSelectionModel model) {
         model.removeListSelectionListener(listSelectionListener);
     }
 
-    private void displayChannelSchedule() {
+    private void clearTableSelectionListeners() {
+        clearSelectionListeners(gui.getTable().getSelectionModel());
+    }
+
+    private void updateTableWithPrograms() {
         DefaultTableModel model = (DefaultTableModel) gui.getTable().getModel();
         model.setRowCount(0);
 
@@ -187,13 +191,16 @@ public class GuiController {
             Object[] rowData = new Object[]{program.getTitle(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
             model.addRow(rowData);
         }
+    }
 
-        // Clear existing ListSelectionListeners
-        clearSelectionListeners(gui.getTable().getSelectionModel());
-
-        // Add the listener
+    private void addTableSelectionListener() {
         gui.getTable().getSelectionModel().addListSelectionListener(listSelectionListener);
     }
 
+    private void displayChannelSchedule() {
+        clearTableSelectionListeners();
+        updateTableWithPrograms();
+        addTableSelectionListener();
+    }
 
 }
