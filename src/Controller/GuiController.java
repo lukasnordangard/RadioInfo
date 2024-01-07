@@ -13,14 +13,15 @@ import java.util.List;
 
 public class GuiController {
 
-    private final ApiController apiCtrl = new ApiController();
+    private final ApiController apiCtrl;
     private final RadioInfoUI gui;
     private List<Program> programList;
     private final BackgroundUpdater backgroundUpdater;
 
     public GuiController(RadioInfoUI gui) {
         this.gui = gui;
-        this.backgroundUpdater = new BackgroundUpdater(this);
+        this.apiCtrl = new ApiController();
+        this.backgroundUpdater = new BackgroundUpdater(this, apiCtrl);
     }
 
     public Program getProgramById(int programId) {
@@ -37,11 +38,11 @@ public class GuiController {
             if (SwingUtilities.isEventDispatchThread()) {
                 System.out.println("Code executed on EDT");
             } else {
-                System.out.println("Code executed on a background thread");
+                System.out.println("\tCode executed on a background thread");
             }
 
             displayChannelSchedule();
-            System.out.println("displayChannelSchedule");
+            printer("displayChannelSchedule");
         });
     }
 
@@ -58,30 +59,18 @@ public class GuiController {
         gui.createMenu(menuBar, "File", "Exit", e -> System.exit(0));
         gui.createMenu(menuBar, "Help", "Help", e -> showHelpDialog(gui.getFrame()));
 
-        SwingWorker<Void, Void> loadChannelsWorker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() {
-                System.out.println("loadChannels");
-                apiCtrl.loadChannels();
-                return null;
-            }
+        backgroundUpdater.updateChannels(menuBar);
 
-            @Override
-            protected void done() {
-                System.out.println("createChannelMenu");
+        gui.getFrame().setJMenuBar(menuBar);
 
-                createChannelMenu(menuBar, "P1", apiCtrl.getP1());
-                createChannelMenu(menuBar, "P2", apiCtrl.getP2());
-                createChannelMenu(menuBar, "P3", apiCtrl.getP3());
-                createChannelMenu(menuBar, "P4", apiCtrl.getP4());
-                createChannelMenu(menuBar, "Other", apiCtrl.getOther());
+    }
 
-                gui.getFrame().setJMenuBar(menuBar);
-
-                System.out.println("=======================");
-            }
-        };
-        loadChannelsWorker.execute();
+    public void createChannelMenus(JMenuBar menuBar){
+        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
+        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
+        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
+        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
+        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
     }
 
     public void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
@@ -108,7 +97,7 @@ public class GuiController {
     }
 
     public void onChannelSelected(int channelId) {
-        backgroundUpdater.startUpdates(channelId);
+        backgroundUpdater.updateProgramsWithTimer(channelId);
     }
 
     public void updateProgramList(int channelId) {
@@ -165,5 +154,14 @@ public class GuiController {
         clearTableSelectionListeners();
         updateTableWithPrograms();
         addTableSelectionListener();
+    }
+
+
+    public void printer(String string){
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println(string);
+        } else {
+            System.out.println("\t" + string);
+        }
     }
 }

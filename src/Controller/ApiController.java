@@ -91,7 +91,7 @@ public class ApiController {
             String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
             String response = sendGetRequest(apiUrl);
 
-            System.out.println("getChannels");
+            printer("getChannels");
 
             channels = parser.parseChannels(response);
         } catch (Exception e) {
@@ -144,7 +144,7 @@ public class ApiController {
         if (SwingUtilities.isEventDispatchThread()) {
             System.out.println("Code executed on EDT");
         } else {
-            System.out.println("Code executed on a background thread");
+            System.out.println("\tCode executed on a background thread");
         }
 
 
@@ -152,11 +152,7 @@ public class ApiController {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
             String response = sendGetRequest(apiUrl);
 
-            if (SwingUtilities.isEventDispatchThread()) {
-                System.out.println("getSchedule");
-            } else {
-                System.out.println("\tgetSchedule");
-            }
+            printer("getSchedule");
 
             //sleep();
 
@@ -174,5 +170,14 @@ public class ApiController {
             e.printStackTrace();
         }
     }
+
+    public void printer(String string){
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println(string);
+        } else {
+            System.out.println("\t" + string);
+        }
+    }
+
 
 }
