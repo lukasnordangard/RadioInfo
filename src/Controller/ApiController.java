@@ -112,7 +112,11 @@ public class ApiController {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
-        System.out.println("Response code: " + connection.getResponseCode());
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println("Response code: " + connection.getResponseCode());
+        } else {
+            System.out.println("\tResponse code: " + connection.getResponseCode());
+        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             StringBuilder response = new StringBuilder();
@@ -148,7 +152,13 @@ public class ApiController {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
             String response = sendGetRequest(apiUrl);
 
-            System.out.println("getSchedule");
+            if (SwingUtilities.isEventDispatchThread()) {
+                System.out.println("getSchedule");
+            } else {
+                System.out.println("\tgetSchedule");
+            }
+
+            //sleep();
 
             programs = parser.parsePrograms(response);
         } catch (Exception e) {

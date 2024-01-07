@@ -17,11 +17,11 @@ public class RadioInfoUI {
 
     public RadioInfoUI() { }
 
-    public JFrame getFrame(){
+    public JFrame getFrame() {
         return frame;
     }
 
-    public JTable getTable(){
+    public JTable getTable() {
         return table;
     }
 
@@ -35,13 +35,10 @@ public class RadioInfoUI {
 
     private void centerFrame() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
         int x = (screenSize.width - frame.getWidth()) / 2;
         int y = (screenSize.height - frame.getHeight()) / 2;
-
         frame.setLocation(x, y);
     }
-
 
     public void createMenu(JMenuBar menuBar, String menuName, String menuItemName, ActionListener actionListener) {
         JMenu menu = new JMenu(menuName);
@@ -53,10 +50,8 @@ public class RadioInfoUI {
 
     public void createMainPanel() {
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
-
         createTable(mainPanel);
         createProgramDetailsLabel(mainPanel);
-
         frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
 
@@ -74,12 +69,10 @@ public class RadioInfoUI {
     }
 
     public void showProgramInfo(Program selectedProgram) {
-
         programDetailsLabel.removeAll();
 
         if (selectedProgram != null) {
             JPanel infoLabelsPanel = new JPanel(new GridLayout(0, 1));
-
             JPanel imagePanel = createImagePanel(selectedProgram);
             JScrollPane descriptionTextArea = createDescriptionTextArea(selectedProgram);
 
@@ -90,8 +83,8 @@ public class RadioInfoUI {
 
             JPanel infoPanel = createInfoPanel(imagePanel, descriptionTextArea, infoLabelsPanel);
             programDetailsLabel.add(infoPanel);
-
         }
+
         programDetailsLabel.revalidate();
         programDetailsLabel.repaint();
     }
@@ -115,6 +108,7 @@ public class RadioInfoUI {
 
     private JPanel createImagePanel(Program selectedProgram) {
         JPanel imagePanel = new JPanel();
+
         if (selectedProgram.getImageUrl() != null && !selectedProgram.getImageUrl().isEmpty()) {
             try {
                 ImageIcon originalIcon = new ImageIcon(new URL(selectedProgram.getImageUrl()));
@@ -126,6 +120,7 @@ public class RadioInfoUI {
                 e.printStackTrace();
             }
         }
+
         return imagePanel;
     }
 
@@ -139,5 +134,4 @@ public class RadioInfoUI {
         JLabel infoLabel = new JLabel(label + " " + value);
         panel.add(infoLabel);
     }
-
 }

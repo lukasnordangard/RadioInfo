@@ -10,21 +10,17 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class GuiController {
 
     private final ApiController apiCtrl = new ApiController();
     private final RadioInfoUI gui;
     private List<Program> programList;
-    private final Timer timer;
-    private TimerTask currentTimerTask;
+    private final BackgroundUpdater backgroundUpdater;
 
-    public GuiController(RadioInfoUI gui){
-        this.timer = new Timer();
+    public GuiController(RadioInfoUI gui) {
         this.gui = gui;
+        this.backgroundUpdater = new BackgroundUpdater(this);
     }
 
     public Program getProgramById(int programId) {
@@ -34,6 +30,19 @@ public class GuiController {
             }
         }
         return null;
+    }
+
+    public void refreshView() {
+        SwingUtilities.invokeLater(() -> {
+            if (SwingUtilities.isEventDispatchThread()) {
+                System.out.println("Code executed on EDT");
+            } else {
+                System.out.println("Code executed on a background thread");
+            }
+
+            displayChannelSchedule();
+            System.out.println("displayChannelSchedule");
+        });
     }
 
     public void createAndShowGUI() {
@@ -48,7 +57,6 @@ public class GuiController {
 
         gui.createMenu(menuBar, "File", "Exit", e -> System.exit(0));
         gui.createMenu(menuBar, "Help", "Help", e -> showHelpDialog(gui.getFrame()));
-
 
         SwingWorker<Void, Void> loadChannelsWorker = new SwingWorker<>() {
             @Override
@@ -81,12 +89,11 @@ public class GuiController {
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             int id = channel.getId();
-            channelMenuItem.addActionListener(e -> updateTable(id));
+            channelMenuItem.addActionListener(e -> onChannelSelected(id));
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);
     }
-
 
     public void showHelpDialog(JFrame frame) {
         String helpMessage = """
@@ -100,51 +107,8 @@ public class GuiController {
         JOptionPane.showMessageDialog(frame, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /**
-     * Initiates a timer for background updates, ensuring data retrieval from the server
-     * occurs without blocking the graphical interface. The timer task periodically
-     * updates Swing components using the 'updateTable' method on the EDT.
-     */
-    public synchronized void updateTable(int channelId) {
-        int updateTime = 60;
-
-        // Cancel the current TimerTask if it exists
-        if (currentTimerTask != null) {
-            currentTimerTask.cancel();
-        }
-
-        currentTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                SwingWorker<Void, Void> updateProgramListWorker = new SwingWorker<>() {
-                    @Override
-                    protected Void doInBackground() {
-                        System.out.println("updateProgramList");
-                        updateProgramList(channelId);
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-                        SwingUtilities.invokeLater(() -> {
-                            if (SwingUtilities.isEventDispatchThread()) {
-                                System.out.println("Code executed on EDT");
-                            } else {
-                                System.out.println("Code executed on a background thread");
-                            }
-
-                            displayChannelSchedule();
-                            System.out.println("displayChannelSchedule");
-                        });
-                    }
-                };
-                updateProgramListWorker.execute();
-
-            }
-        };
-
-        // Schedule the new TimerTask
-        timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.MINUTES.toMillis(updateTime));
+    public void onChannelSelected(int channelId) {
+        backgroundUpdater.startUpdates(channelId);
     }
 
     public void updateProgramList(int channelId) {
@@ -202,5 +166,4 @@ public class GuiController {
         updateTableWithPrograms();
         addTableSelectionListener();
     }
-
 }
