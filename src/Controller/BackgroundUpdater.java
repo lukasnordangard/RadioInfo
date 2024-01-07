@@ -5,18 +5,34 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class responsible for background updates in the GUI.
+ */
 public class BackgroundUpdater {
-    private final Timer timer;
-    private TimerTask currentTimerTask;
+
+    // Attributes
     private final GuiController guiController;
     private final ApiController apiController;
+    private final Timer timer;
+    private TimerTask currentTimerTask;
 
+    /**
+     * Constructor method that initializes BackgroundUpdater.
+     *
+     * @param guiController GuiController instance.
+     * @param apiController ApiController instance.
+     */
     public BackgroundUpdater(GuiController guiController, ApiController apiController) {
         this.timer = new Timer();
         this.guiController = guiController;
         this.apiController = apiController;
     }
 
+    /**
+     * Updates programs for a specific channel with a timed interval.
+     *
+     * @param channelId The ID of the channel to update programs for.
+     */
     public synchronized void updateProgramsWithTimer(int channelId) {
         int updateTime = 60;
 
@@ -37,6 +53,11 @@ public class BackgroundUpdater {
         timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.MINUTES.toMillis(updateTime));
     }
 
+    /**
+     * Updates channels in the background and refreshes the menu bar.
+     *
+     * @param menuBar The main menu bar.
+     */
     public void updateChannels(JMenuBar menuBar) {
         // Perform channel updates in the background
         SwingWorker<Void, Void> updateChannelsWorker = new SwingWorker<>() {

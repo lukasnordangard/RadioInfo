@@ -9,22 +9,42 @@ import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * User Interface class responsible for displaying radio program information.
+ */
 public class RadioInfoUI {
 
+    // Attributes
     private JFrame frame;
     private JTable table;
     private JLabel programDetailsLabel;
 
+    /**
+     * Default constructor for RadioInfoUI.
+     */
     public RadioInfoUI() { }
 
+    /**
+     * Getter method for the main JFrame.
+     *
+     * @return The main JFrame.
+     */
     public JFrame getFrame() {
         return frame;
     }
 
+    /**
+     * Getter method for the JTable.
+     *
+     * @return The JTable displaying program information.
+     */
     public JTable getTable() {
         return table;
     }
 
+    /**
+     * Initializes the main JFrame for the RadioInfoUI.
+     */
     public void initializeFrame() {
         frame = new JFrame("RadioInfoUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,6 +53,9 @@ public class RadioInfoUI {
         centerFrame();
     }
 
+    /**
+     * Centers the main JFrame on the screen.
+     */
     private void centerFrame() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - frame.getWidth()) / 2;
@@ -40,6 +63,14 @@ public class RadioInfoUI {
         frame.setLocation(x, y);
     }
 
+    /**
+     * Creates a menu item in the specified menu bar.
+     *
+     * @param menuBar        The menu bar to add the menu item to.
+     * @param menuName       The name of the menu.
+     * @param menuItemName   The name of the menu item.
+     * @param actionListener The ActionListener for the menu item.
+     */
     public void createMenu(JMenuBar menuBar, String menuName, String menuItemName, ActionListener actionListener) {
         JMenu menu = new JMenu(menuName);
         JMenuItem menuItem = new JMenuItem(menuItemName);
@@ -48,6 +79,9 @@ public class RadioInfoUI {
         menuBar.add(menu);
     }
 
+    /**
+     * Creates the main panel for the GUI.
+     */
     public void createMainPanel() {
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
         createTable(mainPanel);
@@ -55,12 +89,22 @@ public class RadioInfoUI {
         frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Creates the JTable to display program information.
+     *
+     * @param mainPanel The main panel to add the table to.
+     */
     private void createTable(JPanel mainPanel) {
         table = new JTable(new DefaultTableModel(new Object[]{"Program", "Start Time", "End Time"}, 0));
         JScrollPane tableScrollPane = new JScrollPane(table);
         mainPanel.add(tableScrollPane);
     }
 
+    /**
+     * Creates the label to display program details.
+     *
+     * @param mainPanel The main panel to add the label to.
+     */
     private void createProgramDetailsLabel(JPanel mainPanel) {
         programDetailsLabel = new JLabel();
         programDetailsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -68,6 +112,11 @@ public class RadioInfoUI {
         mainPanel.add(programDetailsLabel);
     }
 
+    /**
+     * Displays detailed information about the selected program.
+     *
+     * @param selectedProgram The selected program to display details for.
+     */
     public void showProgramInfo(Program selectedProgram) {
         programDetailsLabel.removeAll();
 
@@ -89,14 +138,28 @@ public class RadioInfoUI {
         programDetailsLabel.repaint();
     }
 
-    private JPanel createInfoPanel(JPanel imagePanel, JScrollPane descriptionScrollPane, JPanel infoLabelsPanel) {
+    /**
+     * Creates a panel to display program information, including an image, description, and additional labels.
+     *
+     * @param imagePanel       The panel displaying the program image.
+     * @param descriptionPanel The panel displaying the program description.
+     * @param infoLabelsPanel  The panel displaying additional information labels.
+     * @return The combined info panel.
+     */
+    private JPanel createInfoPanel(JPanel imagePanel, JScrollPane descriptionPanel, JPanel infoLabelsPanel) {
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(imagePanel, BorderLayout.NORTH);
-        rightPanel.add(descriptionScrollPane, BorderLayout.CENTER);
+        rightPanel.add(descriptionPanel, BorderLayout.CENTER);
         rightPanel.add(infoLabelsPanel, BorderLayout.SOUTH);
         return rightPanel;
     }
 
+    /**
+     * Creates a scrollable text area to display the program description.
+     *
+     * @param selectedProgram The program containing the description.
+     * @return The scrollable text area.
+     */
     private JScrollPane createDescriptionTextArea(Program selectedProgram) {
         JTextArea descriptionTextArea = new JTextArea(selectedProgram.getDescription());
         descriptionTextArea.setLineWrap(true);
@@ -106,6 +169,12 @@ public class RadioInfoUI {
         return new JScrollPane(descriptionTextArea);
     }
 
+    /**
+     * Creates a panel to display the program image.
+     *
+     * @param selectedProgram The program containing the image URL.
+     * @return The panel displaying the program image.
+     */
     private JPanel createImagePanel(Program selectedProgram) {
         JPanel imagePanel = new JPanel();
 
@@ -124,12 +193,27 @@ public class RadioInfoUI {
         return imagePanel;
     }
 
+    /**
+     * Resizes the given ImageIcon to the specified dimensions.
+     *
+     * @param icon         The original ImageIcon.
+     * @param targetWidth  The target width for the resized image.
+     * @param targetHeight The target height for the resized image.
+     * @return The resized ImageIcon.
+     */
     private ImageIcon resizeImage(ImageIcon icon, int targetWidth, int targetHeight) {
         Image img = icon.getImage();
         Image resizedImg = img.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
         return new ImageIcon(resizedImg);
     }
 
+    /**
+     * Adds an information label to the specified panel.
+     *
+     * @param panel The panel to add the label to.
+     * @param label The label text.
+     * @param value The value text.
+     */
     private void addInfoLabel(JPanel panel, String label, String value) {
         JLabel infoLabel = new JLabel(label + " " + value);
         panel.add(infoLabel);

@@ -11,19 +11,35 @@ import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Controller class responsible for managing the graphical user
+ * interface (GUI) interactions and updates.
+ */
 public class GuiController {
 
+    // Attributes
     private final ApiController apiCtrl;
     private final RadioInfoUI gui;
-    private List<Program> programList;
     private final BackgroundUpdater backgroundUpdater;
+    private List<Program> programList;
 
+    /**
+     * Constructor method that initializes GuiController.
+     *
+     * @param gui The RadioInfoUI the user interacts with.
+     */
     public GuiController(RadioInfoUI gui) {
         this.gui = gui;
         this.apiCtrl = new ApiController();
         this.backgroundUpdater = new BackgroundUpdater(this, apiCtrl);
     }
 
+    /**
+     * Retrieves a program based on its ID.
+     *
+     * @param programId The ID of the program to retrieve.
+     * @return The Program object or null if not found.
+     */
     public Program getProgramById(int programId) {
         for (Program program : programList) {
             if (program.getId() == programId) {
@@ -33,10 +49,16 @@ public class GuiController {
         return null;
     }
 
+    /**
+     * Requests a refresh of the GUI table.
+     */
     public void refreshTable() {
         SwingUtilities.invokeLater(this::displayChannelSchedule);
     }
 
+    /**
+     * Creates and displays the main GUI.
+     */
     public void createAndShowGUI() {
         gui.initializeFrame();
         createMenuBar();
@@ -44,6 +66,9 @@ public class GuiController {
         gui.getFrame().setVisible(true);
     }
 
+    /**
+     * Creates the menu bar for the main GUI.
+     */
     public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
@@ -53,9 +78,13 @@ public class GuiController {
         backgroundUpdater.updateChannels(menuBar);
 
         gui.getFrame().setJMenuBar(menuBar);
-
     }
 
+    /**
+     * Creates menu items for each channel category in the main menu bar.
+     *
+     * @param menuBar The main menu bar.
+     */
     public void createChannelMenus(JMenuBar menuBar){
         createChannelMenu(menuBar, "P1", apiCtrl.getP1());
         createChannelMenu(menuBar, "P2", apiCtrl.getP2());
@@ -64,6 +93,13 @@ public class GuiController {
         createChannelMenu(menuBar, "Other", apiCtrl.getOther());
     }
 
+    /**
+     * Creates a channel menu with items for each channel.
+     *
+     * @param menuBar   The main menu bar.
+     * @param menuName  The name of the channel menu.
+     * @param channels  The list of channels to be displayed in the menu.
+     */
     public void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
         JMenu channelMenu = new JMenu(menuName);
         for (Channel channel : channels) {
@@ -75,6 +111,11 @@ public class GuiController {
         menuBar.add(channelMenu);
     }
 
+    /**
+     * Displays a help dialog for the user.
+     *
+     * @param frame The parent frame for the dialog.
+     */
     public void showHelpDialog(JFrame frame) {
         String helpMessage = """
             Welcome to RadioInfoUI!
@@ -87,42 +128,75 @@ public class GuiController {
         JOptionPane.showMessageDialog(frame, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Handles the selection of a channel.
+     *
+     * @param channelId The ID of the selected channel.
+     */
     public void onChannelSelected(int channelId) {
         backgroundUpdater.updateProgramsWithTimer(channelId);
     }
 
+    /**
+     * Updates the list of programs for a specific channel.
+     *
+     * @param channelId The ID of the channel to update programs for.
+     */
     public void updateProgramList(int channelId) {
-        programList = apiCtrl.getSchedule(channelId);
+        List<Program> programs = apiCtrl.getSchedule(channelId);
+
+        SwingUtilities.invokeLater(() -> programList = programs);
     }
 
     private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;
 
+    /**
+     * Handles the event of a list selection change.
+     *
+     * @param e The ListSelectionEvent.
+     */
     private void handleListSelectionEvent(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting() && gui.getTable().isShowing()) {
             int selectedRow = gui.getTable().getSelectedRow();
             if (selectedRow != -1) {
                 Program selectedProgram = getProgramBySelectedRow(selectedRow);
                 if (selectedProgram != null) {
-                    //System.out.println("SET UP PROGRAM: " + selectedProgram.getId() + " " + selectedProgram.getTitle());
                     gui.showProgramInfo(selectedProgram);
                 }
             }
         }
     }
 
+    /**
+     * Retrieves a program based on the selected row in the table.
+     *
+     * @param selectedRow The selected row index.
+     * @return The Program object or null if not found.
+     */
     private Program getProgramBySelectedRow(int selectedRow) {
         return (selectedRow >= 0 && selectedRow < programList.size()) ?
                 getProgramById(programList.get(selectedRow).getId()) : null;
     }
 
+    /**
+     * Clears list selection listeners from the table model.
+     *
+     * @param model The ListSelectionModel to clear listeners from.
+     */
     private void clearSelectionListeners(ListSelectionModel model) {
         model.removeListSelectionListener(listSelectionListener);
     }
 
+    /**
+     * Clears list selection listeners from the table.
+     */
     private void clearTableSelectionListeners() {
         clearSelectionListeners(gui.getTable().getSelectionModel());
     }
 
+    /**
+     * Updates the GUI table with the list of programs.
+     */
     private void updateTableWithPrograms() {
         DefaultTableModel model = (DefaultTableModel) gui.getTable().getModel();
         model.setRowCount(0);
@@ -135,14 +209,19 @@ public class GuiController {
         }
     }
 
+    /**
+     * Adds a list selection listener to the table.
+     */
     private void addTableSelectionListener() {
         gui.getTable().getSelectionModel().addListSelectionListener(listSelectionListener);
     }
 
+    /**
+     * Displays the schedule of the selected channel.
+     */
     private void displayChannelSchedule() {
         clearTableSelectionListeners();
         updateTableWithPrograms();
         addTableSelectionListener();
     }
-
 }

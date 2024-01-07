@@ -3,7 +3,6 @@ package Controller;
 import Model.Channel;
 import Model.Program;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -25,27 +24,55 @@ public class ApiController {
     private final List<Channel> other = new ArrayList<>();
     private final Parser parser;
 
+    /**
+     * Constructor method that initializes ApiController.
+     */
     public ApiController(){
         this.parser = new Parser();
     }
 
-    public List<Channel> getP1(){
+    /**
+     * Retrieves the list of channels categorized as P1.
+     *
+     * @return List of P1 channels.
+     */
+    public List<Channel> getP1() {
         return p1;
     }
 
-    public List<Channel> getP2(){
+    /**
+     * Retrieves the list of channels categorized as P2.
+     *
+     * @return List of P2 channels.
+     */
+    public List<Channel> getP2() {
         return p2;
     }
 
-    public List<Channel> getP3(){
+    /**
+     * Retrieves the list of channels categorized as P3.
+     *
+     * @return List of P3 channels.
+     */
+    public List<Channel> getP3() {
         return p3;
     }
 
-    public List<Channel> getP4(){
+    /**
+     * Retrieves the list of channels categorized as P4.
+     *
+     * @return List of P4 channels.
+     */
+    public List<Channel> getP4() {
         return p4;
     }
 
-    public List<Channel> getOther(){
+    /**
+     * Retrieves the list of channels categorized as 'Other'.
+     *
+     * @return List of 'Other' channels.
+     */
+    public List<Channel> getOther() {
         return other;
     }
 
@@ -145,22 +172,4 @@ public class ApiController {
         }
         return programs;
     }
-
-    void sleep(){
-        try{
-            Thread.sleep(5000);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void printer(String string){
-        if (SwingUtilities.isEventDispatchThread()) {
-            System.out.println(string);
-        } else {
-            System.out.println("\t" + string);
-        }
-    }
-
-
 }

@@ -23,7 +23,10 @@ import java.util.List;
  */
 public class Parser {
 
-    Parser(){}
+    /**
+     * Constructor method that initializes Parser.
+     */
+    public Parser() {}
 
     /**
      * Parses XML data to extract information about radio channels.
