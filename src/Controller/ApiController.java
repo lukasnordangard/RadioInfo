@@ -3,6 +3,7 @@ package Controller;
 import Model.Channel;
 import Model.Program;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -136,7 +137,12 @@ public class ApiController {
     public List<Program> getSchedule(int channelId) {
         List<Program> programs = new ArrayList<>();
 
-        //sleep();
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println("Code executed on EDT");
+        } else {
+            System.out.println("Code executed on a background thread");
+        }
+
 
         try {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;

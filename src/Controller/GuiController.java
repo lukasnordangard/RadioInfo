@@ -5,7 +5,12 @@ import Model.Program;
 import View.RadioInfoUI;
 
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Timer;
@@ -79,7 +84,7 @@ public class GuiController {
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             int id = channel.getId();
-            channelMenuItem.addActionListener(e -> startTimer(id));
+            channelMenuItem.addActionListener(e -> updateTable(id));
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);
@@ -103,7 +108,7 @@ public class GuiController {
      * occurs without blocking the graphical interface. The timer task periodically
      * updates Swing components using the 'updateTable' method on the EDT.
      */
-    public synchronized void startTimer(int channelId) {
+    public synchronized void updateTable(int channelId) {
         int updateTime = 60;
 
         // Cancel the current TimerTask if it exists
@@ -124,11 +129,20 @@ public class GuiController {
 
                     @Override
                     protected void done() {
-                        displayChannelSchedule();
-                        System.out.println("displayChannelSchedule");
+                        SwingUtilities.invokeLater(() -> {
+                            if (SwingUtilities.isEventDispatchThread()) {
+                                System.out.println("Code executed on EDT");
+                            } else {
+                                System.out.println("Code executed on a background thread");
+                            }
+
+                            displayChannelSchedule();
+                            System.out.println("displayChannelSchedule");
+                        });
                     }
                 };
                 updateProgramListWorker.execute();
+
             }
         };
 
@@ -141,6 +155,28 @@ public class GuiController {
         programList = apiCtrl.getSchedule(channelId);
     }
 
+    private ListSelectionListener listSelectionListener = new ListSelectionListener() {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if (!e.getValueIsAdjusting() && gui.getTable().isShowing()) {
+                int selectedRow = gui.getTable().getSelectedRow();
+                if (selectedRow != -1) {
+                    Program selectedProgram = getProgramById(programList.get(selectedRow).getId());
+                    if (selectedProgram != null) {
+                        System.out.println("SET UP PROGRAM: " + selectedProgram.getId() + " " + selectedProgram.getTitle());
+                        gui.showProgramInfo(selectedProgram);
+                    } else {
+                        System.out.println("WTF?");
+                    }
+                }
+            }
+        }
+    };
+
+    private void clearSelectionListeners(ListSelectionModel model) {
+        model.removeListSelectionListener(listSelectionListener);
+    }
+
     private void displayChannelSchedule() {
         DefaultTableModel model = (DefaultTableModel) gui.getTable().getModel();
         model.setRowCount(0);
@@ -150,16 +186,13 @@ public class GuiController {
         for (Program program : programList) {
             Object[] rowData = new Object[]{program.getTitle(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
             model.addRow(rowData);
-
-            int programId = program.getId();
-            int rowIndex = model.getRowCount() - 1;
-            gui.getTable().getSelectionModel().addListSelectionListener(e -> {
-                if (!e.getValueIsAdjusting() && gui.getTable().getSelectedRow() == rowIndex) {
-                    Program selectedProgram = getProgramById(programId);
-                    gui.showProgramInfo(selectedProgram);
-                }
-            });
         }
+
+        // Clear existing ListSelectionListeners
+        clearSelectionListeners(gui.getTable().getSelectionModel());
+
+        // Add the listener
+        gui.getTable().getSelectionModel().addListSelectionListener(listSelectionListener);
     }
 
 
