@@ -29,7 +29,7 @@ public class BackgroundUpdater {
             @Override
             public void run() {
                 guiController.updateProgramList(channelId);
-                guiController.refreshView();
+                guiController.refreshTable();
             }
         };
 
@@ -42,18 +42,13 @@ public class BackgroundUpdater {
         SwingWorker<Void, Void> updateChannelsWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                guiController.printer("Updating channels");
                 apiController.loadChannels();
                 return null;
             }
 
             @Override
             protected void done() {
-                guiController.printer("Channels updated");
-
                 guiController.createChannelMenus(menuBar);
-
-                System.out.println("=======================");
             }
         };
         updateChannelsWorker.execute();

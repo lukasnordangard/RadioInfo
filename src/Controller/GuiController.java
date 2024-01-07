@@ -33,17 +33,8 @@ public class GuiController {
         return null;
     }
 
-    public void refreshView() {
-        SwingUtilities.invokeLater(() -> {
-            if (SwingUtilities.isEventDispatchThread()) {
-                System.out.println("Code executed on EDT");
-            } else {
-                System.out.println("\tCode executed on a background thread");
-            }
-
-            displayChannelSchedule();
-            printer("displayChannelSchedule");
-        });
+    public void refreshTable() {
+        SwingUtilities.invokeLater(this::displayChannelSchedule);
     }
 
     public void createAndShowGUI() {
@@ -112,10 +103,8 @@ public class GuiController {
             if (selectedRow != -1) {
                 Program selectedProgram = getProgramBySelectedRow(selectedRow);
                 if (selectedProgram != null) {
-                    System.out.println("SET UP PROGRAM: " + selectedProgram.getId() + " " + selectedProgram.getTitle());
+                    //System.out.println("SET UP PROGRAM: " + selectedProgram.getId() + " " + selectedProgram.getTitle());
                     gui.showProgramInfo(selectedProgram);
-                } else {
-                    System.out.println("WTF?");
                 }
             }
         }
@@ -156,12 +145,4 @@ public class GuiController {
         addTableSelectionListener();
     }
 
-
-    public void printer(String string){
-        if (SwingUtilities.isEventDispatchThread()) {
-            System.out.println(string);
-        } else {
-            System.out.println("\t" + string);
-        }
-    }
 }

@@ -91,8 +91,6 @@ public class ApiController {
             String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
             String response = sendGetRequest(apiUrl);
 
-            printer("getChannels");
-
             channels = parser.parseChannels(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,12 +109,6 @@ public class ApiController {
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
-
-        if (SwingUtilities.isEventDispatchThread()) {
-            System.out.println("Response code: " + connection.getResponseCode());
-        } else {
-            System.out.println("\tResponse code: " + connection.getResponseCode());
-        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             StringBuilder response = new StringBuilder();
@@ -141,18 +133,9 @@ public class ApiController {
     public List<Program> getSchedule(int channelId) {
         List<Program> programs = new ArrayList<>();
 
-        if (SwingUtilities.isEventDispatchThread()) {
-            System.out.println("Code executed on EDT");
-        } else {
-            System.out.println("\tCode executed on a background thread");
-        }
-
-
         try {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
             String response = sendGetRequest(apiUrl);
-
-            printer("getSchedule");
 
             //sleep();
 
