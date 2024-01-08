@@ -72,13 +72,17 @@ public class GuiController {
     public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        gui.createMenu(menuBar, "File", "Exit", e -> System.exit(0));
-        gui.createMenu(menuBar, "Help", "Help", e -> showHelpDialog(gui.getFrame()));
+        gui.createMenu(menuBar, "Alternatives", "Update Channels", e -> backgroundUpdater.updateChannels());
+        JMenuItem helpMenuItem = new JMenuItem("Help");
+        helpMenuItem.addActionListener(e -> showHelpDialog(gui.getFrame()));
+        menuBar.getMenu(0).addSeparator();
+        menuBar.getMenu(0).add(helpMenuItem);
 
-        backgroundUpdater.updateChannels(menuBar);
+        backgroundUpdater.updateChannels();
 
         gui.getFrame().setJMenuBar(menuBar);
     }
+
 
     /**
      * Creates menu items for each channel category in the main menu bar.
@@ -91,6 +95,26 @@ public class GuiController {
         createChannelMenu(menuBar, "P3", apiCtrl.getP3());
         createChannelMenu(menuBar, "P4", apiCtrl.getP4());
         createChannelMenu(menuBar, "Other", apiCtrl.getOther());
+    }
+
+    public void updateChannelMenus() {
+        JMenuBar menuBar = gui.getFrame().getJMenuBar();
+
+        // Remove existing channel menus
+        for (int i = menuBar.getMenuCount() - 1; i >= 0; i--) {
+            JMenu menu = menuBar.getMenu(i);
+            if (menu.getText().equals("P1") || menu.getText().equals("P2") || menu.getText().equals("P3") ||
+                    menu.getText().equals("P4") || menu.getText().equals("Other")) {
+                menuBar.remove(i);
+            }
+        }
+
+        // Create and add updated channel menus
+        createChannelMenus(menuBar);
+
+        // Repaint the frame to reflect changes
+        gui.getFrame().revalidate();
+        gui.getFrame().repaint();
     }
 
     /**

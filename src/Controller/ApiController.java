@@ -76,10 +76,20 @@ public class ApiController {
         return other;
     }
 
+    private void clearChannels(){
+        p1.clear();
+        p2.clear();
+        p3.clear();
+        p4.clear();
+        other.clear();
+    }
+
     /**
      * Fetches channel information from the API, categorizes channels, and loads them into lists.
      */
     public void loadChannels() {
+        clearChannels();
+
         List<Channel> channels = getChannels();
 
         for (Channel channel : channels) {

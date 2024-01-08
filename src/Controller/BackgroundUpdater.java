@@ -55,10 +55,8 @@ public class BackgroundUpdater {
 
     /**
      * Updates channels in the background and refreshes the menu bar.
-     *
-     * @param menuBar The main menu bar.
      */
-    public void updateChannels(JMenuBar menuBar) {
+    public void updateChannels() {
         // Perform channel updates in the background
         SwingWorker<Void, Void> updateChannelsWorker = new SwingWorker<>() {
             @Override
@@ -69,7 +67,7 @@ public class BackgroundUpdater {
 
             @Override
             protected void done() {
-                guiController.createChannelMenus(menuBar);
+                guiController.updateChannelMenus();
             }
         };
         updateChannelsWorker.execute();
