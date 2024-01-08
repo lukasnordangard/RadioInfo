@@ -19,17 +19,17 @@ public class GuiController {
 
     // Attributes
     private final ApiController apiCtrl;
-    private final RadioInfoUI gui;
+    private final RadioInfoUI view;
     private final BackgroundUpdater backgroundUpdater;
     private List<Program> programList;
 
     /**
      * Constructor method that initializes GuiController.
      *
-     * @param gui The RadioInfoUI the user interacts with.
+     * @param view The RadioInfoUI the user interacts with.
      */
-    public GuiController(RadioInfoUI gui) {
-        this.gui = gui;
+    public GuiController(RadioInfoUI view) {
+        this.view = view;
         this.apiCtrl = new ApiController();
         this.backgroundUpdater = new BackgroundUpdater(this, apiCtrl);
     }
@@ -60,10 +60,10 @@ public class GuiController {
      * Creates and displays the main GUI.
      */
     public void createAndShowGUI() {
-        gui.initializeFrame();
+        view.initializeFrame();
         createMenuBar();
-        gui.createMainPanel();
-        gui.getFrame().setVisible(true);
+        view.createMainPanel();
+        view.getFrame().setVisible(true);
     }
 
     /**
@@ -72,15 +72,15 @@ public class GuiController {
     public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        gui.createMenu(menuBar, "Alternatives", "Update Channels", e -> backgroundUpdater.updateChannels());
+        view.createMenu(menuBar, "Alternatives", "Update Channels", e -> backgroundUpdater.updateChannels());
         JMenuItem helpMenuItem = new JMenuItem("Help");
-        helpMenuItem.addActionListener(e -> showHelpDialog(gui.getFrame()));
+        helpMenuItem.addActionListener(e -> showHelpDialog(view.getFrame()));
         menuBar.getMenu(0).addSeparator();
         menuBar.getMenu(0).add(helpMenuItem);
 
         backgroundUpdater.updateChannels();
 
-        gui.getFrame().setJMenuBar(menuBar);
+        view.getFrame().setJMenuBar(menuBar);
     }
 
 
@@ -102,7 +102,7 @@ public class GuiController {
      * Removes existing channel menus and recreates them.
      */
     public void updateChannelMenus() {
-        JMenuBar menuBar = gui.getFrame().getJMenuBar();
+        JMenuBar menuBar = view.getFrame().getJMenuBar();
 
         // Remove existing channel menus
         for (int i = menuBar.getMenuCount() - 1; i >= 0; i--) {
@@ -117,8 +117,8 @@ public class GuiController {
         createChannelMenus(menuBar);
 
         // Revalidate and repaint the main GUI frame
-        gui.getFrame().revalidate();
-        gui.getFrame().repaint();
+        view.getFrame().revalidate();
+        view.getFrame().repaint();
     }
 
     /**
@@ -184,12 +184,12 @@ public class GuiController {
      * @param e The ListSelectionEvent.
      */
     private void handleListSelectionEvent(ListSelectionEvent e) {
-        if (!e.getValueIsAdjusting() && gui.getTable().isShowing()) {
-            int selectedRow = gui.getTable().getSelectedRow();
+        if (!e.getValueIsAdjusting() && view.getTable().isShowing()) {
+            int selectedRow = view.getTable().getSelectedRow();
             if (selectedRow != -1) {
                 Program selectedProgram = getProgramBySelectedRow(selectedRow);
                 if (selectedProgram != null) {
-                    gui.showProgramInfo(selectedProgram);
+                    view.showProgramInfo(selectedProgram);
                 }
             }
         }
@@ -219,14 +219,14 @@ public class GuiController {
      * Clears list selection listeners from the table.
      */
     private void clearTableSelectionListeners() {
-        clearSelectionListeners(gui.getTable().getSelectionModel());
+        clearSelectionListeners(view.getTable().getSelectionModel());
     }
 
     /**
      * Updates the GUI table with the list of programs.
      */
     private void updateTableWithPrograms() {
-        DefaultTableModel model = (DefaultTableModel) gui.getTable().getModel();
+        DefaultTableModel model = (DefaultTableModel) view.getTable().getModel();
         model.setRowCount(0);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -241,7 +241,7 @@ public class GuiController {
      * Adds a list selection listener to the table.
      */
     private void addTableSelectionListener() {
-        gui.getTable().getSelectionModel().addListSelectionListener(listSelectionListener);
+        view.getTable().getSelectionModel().addListSelectionListener(listSelectionListener);
     }
 
     /**
