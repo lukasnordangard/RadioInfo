@@ -97,6 +97,10 @@ public class GuiController {
         createChannelMenu(menuBar, "Other", apiCtrl.getOther());
     }
 
+    /**
+     * Updates the channel menus in the main GUI's menu bar.
+     * Removes existing channel menus and recreates them.
+     */
     public void updateChannelMenus() {
         JMenuBar menuBar = gui.getFrame().getJMenuBar();
 
@@ -109,10 +113,10 @@ public class GuiController {
             }
         }
 
-        // Create and add updated channel menus
+        // Recreate channel menus
         createChannelMenus(menuBar);
 
-        // Repaint the frame to reflect changes
+        // Revalidate and repaint the main GUI frame
         gui.getFrame().revalidate();
         gui.getFrame().repaint();
     }
