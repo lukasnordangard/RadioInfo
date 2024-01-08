@@ -46,7 +46,7 @@ public class RadioInfoUI {
      * Initializes the main JFrame for the RadioInfoUI.
      */
     public void initializeFrame() {
-        frame = new JFrame("RadioInfoUI");
+        frame = new JFrame("RadioInfo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 720);
         frame.setLocationRelativeTo(null);
