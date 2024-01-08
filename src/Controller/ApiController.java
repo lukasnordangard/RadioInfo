@@ -178,8 +178,6 @@ public class ApiController {
             String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
             String response = sendGetRequest(apiUrl);
 
-            //sleep();
-
             programs = parser.parsePrograms(response);
         } catch (Exception e) {
             e.printStackTrace();
