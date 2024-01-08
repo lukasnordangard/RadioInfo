@@ -76,6 +76,10 @@ public class ApiController {
         return other;
     }
 
+    /**
+     * Clears the lists containing channels for different categories.
+     * Clears the lists p1, p2, p3, p4, and other.
+     */
     private void clearChannels(){
         p1.clear();
         p2.clear();
