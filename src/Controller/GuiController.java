@@ -162,7 +162,21 @@ public class GuiController {
      * @param channelId The ID of the selected channel.
      */
     public void onChannelSelected(int channelId) {
-        backgroundUpdater.updateProgramsWithTimer(channelId);
+        for (Channel channel : apiCtrl.getAllChannels()){
+
+            if(!channel.getSchedule().isEmpty()) {
+                System.out.println(channel.getName() + ": " + channel.getSchedule());
+            }
+
+            if(channel.getId() == channelId){
+                if(channel.getSchedule().isEmpty()){
+                    backgroundUpdater.updateProgramsWithTimer(channelId);
+                } else{
+                    programList = channel.getSchedule();
+                    refreshTable();
+                }
+            }
+        }
     }
 
     /**
@@ -170,10 +184,21 @@ public class GuiController {
      *
      * @param channelId The ID of the channel to update programs for.
      */
-    public void updateProgramList(int channelId) {
-        List<Program> programs = apiCtrl.getSchedule(channelId);
+    public void updateChannelSchedule(int channelId) {
+        List<Program> schedule = apiCtrl.getSchedule(channelId);
 
-        SwingUtilities.invokeLater(() -> programList = programs);
+        for (Channel channel : apiCtrl.getAllChannels()){
+            if(channel.getId() == channelId) {
+                //channel.setSchedule(schedule);
+                //SwingUtilities.invokeLater(() -> programList = schedule);
+                SwingUtilities.invokeLater(() -> {
+                    channel.setSchedule(schedule);
+                    System.out.println("updateChannelSchedule");
+                    apiCtrl.filterAndAddChannel();
+                    programList = channel.getSchedule();
+                });
+            }
+        }
     }
 
     private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;

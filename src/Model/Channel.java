@@ -1,5 +1,6 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ public class Channel {
     // Attributes
     private final int id;
     private final String name;
-    private final List<Program> programList = null;
+    private final List<Program> schedule;
 
     /**
      * Constructor method that constructs the channel model.
@@ -22,6 +23,7 @@ public class Channel {
     public Channel(int id, String name) {
         this.id = id;
         this.name = name;
+        this.schedule = new ArrayList<>();
     }
 
     /**
@@ -40,5 +42,19 @@ public class Channel {
      */
     public String getName() {
         return name;
+    }
+
+    public List<Program> getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(List<Program> schedule){
+        for (Program episode : schedule) {
+            addEpisodeToSchedule(episode);
+        }
+    }
+
+    public void addEpisodeToSchedule(Program program) {
+        this.schedule.add(program);
     }
 }

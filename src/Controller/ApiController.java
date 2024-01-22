@@ -17,6 +17,7 @@ import java.util.List;
 public class ApiController {
 
     // Lists to categorize channels based on their names
+    private List<Channel> allChannels = new ArrayList<>();
     private final List<Channel> p1 = new ArrayList<>();
     private final List<Channel> p2 = new ArrayList<>();
     private final List<Channel> p3 = new ArrayList<>();
@@ -29,6 +30,10 @@ public class ApiController {
      */
     public ApiController(){
         this.parser = new Parser();
+    }
+
+    public List<Channel> getAllChannels() {
+        return allChannels;
     }
 
     /**
@@ -94,30 +99,28 @@ public class ApiController {
     public void loadChannels() {
         clearChannels();
 
-        List<Channel> channels = getChannels();
+        allChannels = getChannels();
 
-        for (Channel channel : channels) {
-            filterAndAddChannel(channel);
-        }
+        filterAndAddChannel();
     }
 
     /**
      * Filters and adds a channel to the appropriate list based on its name.
-     *
-     * @param channel The channel to be categorized and added to a list.
      */
-    private void filterAndAddChannel(Channel channel) {
-        String channelName = channel.getName();
-        if (channelName.contains("P1")) {
-            p1.add(channel);
-        } else if (channelName.contains("P2")) {
-            p2.add(channel);
-        } else if (channelName.contains("P3")) {
-            p3.add(channel);
-        } else if (channelName.contains("P4")) {
-            p4.add(channel);
-        } else {
-            other.add(channel);
+    public void filterAndAddChannel() {
+        for (Channel channel : allChannels) {
+            String channelName = channel.getName();
+            if (channelName.contains("P1")) {
+                p1.add(channel);
+            } else if (channelName.contains("P2")) {
+                p2.add(channel);
+            } else if (channelName.contains("P3")) {
+                p3.add(channel);
+            } else if (channelName.contains("P4")) {
+                p4.add(channel);
+            } else {
+                other.add(channel);
+            }
         }
     }
 
