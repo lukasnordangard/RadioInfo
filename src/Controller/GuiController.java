@@ -53,7 +53,21 @@ public class GuiController {
      * Requests a refresh of the GUI table.
      */
     public void refreshTable() {
-        SwingUtilities.invokeLater(this::displayChannelSchedule);
+
+        SwingUtilities.invokeLater(() -> {
+            displayChannelSchedule();
+
+            for (Channel channel : apiCtrl.getAllChannels()){
+                if(!channel.getSchedule().isEmpty()) {
+                    System.out.println(channel.getName() + ": " + channel.getSchedule());
+
+                }
+            }
+            System.out.println("===============================");
+
+        });
+
+        //SwingUtilities.invokeLater(this::displayChannelSchedule);
     }
 
     /**
@@ -164,13 +178,10 @@ public class GuiController {
     public void onChannelSelected(int channelId) {
         for (Channel channel : apiCtrl.getAllChannels()){
 
-            if(!channel.getSchedule().isEmpty()) {
-                System.out.println(channel.getName() + ": " + channel.getSchedule());
-            }
 
             if(channel.getId() == channelId){
                 if(channel.getSchedule().isEmpty()){
-                    backgroundUpdater.updateProgramsWithTimer(channelId);
+                    backgroundUpdater.updateChannelScheduleWithTimer(channelId);
                 } else{
                     programList = channel.getSchedule();
                     refreshTable();
@@ -187,18 +198,16 @@ public class GuiController {
     public void updateChannelSchedule(int channelId) {
         List<Program> schedule = apiCtrl.getSchedule(channelId);
 
-        for (Channel channel : apiCtrl.getAllChannels()){
-            if(channel.getId() == channelId) {
-                //channel.setSchedule(schedule);
-                //SwingUtilities.invokeLater(() -> programList = schedule);
-                SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
+            for (Channel channel : apiCtrl.getAllChannels()){
+                if(channel.getId() == channelId) {
                     channel.setSchedule(schedule);
-                    System.out.println("updateChannelSchedule");
                     apiCtrl.filterAndAddChannel();
                     programList = channel.getSchedule();
-                });
+                }
             }
-        }
+        });
+
     }
 
     private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;

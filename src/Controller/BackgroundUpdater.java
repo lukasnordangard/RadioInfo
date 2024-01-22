@@ -33,7 +33,7 @@ public class BackgroundUpdater {
      *
      * @param channelId The ID of the channel to update programs for.
      */
-    public void updateProgramsWithTimer(int channelId) {
+    public void updateChannelScheduleWithTimer(int channelId) {
         int updateTime = 60;
 
         // Cancel the current TimerTask if it exists
@@ -44,6 +44,12 @@ public class BackgroundUpdater {
         currentTimerTask = new TimerTask() {
             @Override
             public void run() {
+                if (SwingUtilities.isEventDispatchThread()) {
+                    System.out.println("EDT");
+                } else {
+                    System.out.println("Thread");
+                }
+
                 guiController.updateChannelSchedule(channelId);
                 guiController.refreshTable();
             }
