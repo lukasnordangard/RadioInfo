@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.List;
+
 /**
  * This is a model class that represent a basic structure for storing
  * information about a radio channel.
@@ -9,6 +11,7 @@ public class Channel {
     // Attributes
     private final int id;
     private final String name;
+    private final List<Program> programList = null;
 
     /**
      * Constructor method that constructs the channel model.
