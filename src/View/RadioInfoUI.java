@@ -95,7 +95,14 @@ public class RadioInfoUI {
      * @param mainPanel The main panel to add the table to.
      */
     private void createTable(JPanel mainPanel) {
-        table = new JTable(new DefaultTableModel(new Object[]{"Program", "Start Time", "End Time"}, 0));
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Program", "Start Time", "End Time"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Make all cells non-editable
+                return false;
+            }
+        };
+        table = new JTable(model);
         JScrollPane tableScrollPane = new JScrollPane(table);
         mainPanel.add(tableScrollPane);
     }
