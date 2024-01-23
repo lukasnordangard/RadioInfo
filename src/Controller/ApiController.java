@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,17 +170,11 @@ public class ApiController {
         }
     }
 
-    /**
-     * Retrieves the schedule of programs for a given channel ID from the API.
-     *
-     * @param channelId The ID of the channel for which to retrieve the schedule.
-     * @return A list of Program objects representing the schedule of programs for the channel.
-     */
-    public List<Program> getSchedule(int channelId) {
+    public List<Program> getSchedule(int channelId, String date) {
         List<Program> programs = new ArrayList<>();
 
         try {
-            String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId;
+            String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId + "&date=" + date;
             String response = sendGetRequest(apiUrl);
 
             programs = parser.parsePrograms(response);
@@ -186,5 +182,21 @@ public class ApiController {
             e.printStackTrace();
         }
         return programs;
+    }
+
+    public List<Program> getAllEpisodesInSchedule(int id) {
+        LocalDate currentDate = java.time.LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+
+        List<Program> dayCurrent = getSchedule(id,currentDate.toString());
+        List<Program> episodesToReturn = new ArrayList<>(dayCurrent);
+        if (currentTime.getHour() >= 12) {
+            List<Program> dayAfter = getSchedule(id,currentDate.plusDays(1).toString());
+            episodesToReturn.addAll(dayAfter);
+        } else {
+            List<Program> dayBefore = getSchedule(id,currentDate.minusDays(1).toString());
+            episodesToReturn.addAll(dayBefore);
+        }
+        return episodesToReturn;
     }
 }

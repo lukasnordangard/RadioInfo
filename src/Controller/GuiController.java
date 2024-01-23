@@ -196,7 +196,7 @@ public class GuiController {
      * @param channelId The ID of the channel to update programs for.
      */
     public void updateChannelSchedule(int channelId) {
-        List<Program> schedule = apiCtrl.getSchedule(channelId);
+        List<Program> schedule = apiCtrl.getAllEpisodesInSchedule(channelId);
 
         SwingUtilities.invokeLater(() -> {
             for (Channel channel : apiCtrl.getAllChannels()){
