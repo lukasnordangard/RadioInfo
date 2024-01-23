@@ -1,6 +1,10 @@
 package Controller;
 
+import Model.Channel;
+
 import javax.swing.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +63,24 @@ public class BackgroundUpdater {
         timer.scheduleAtFixedRate(currentTimerTask, 0, TimeUnit.MINUTES.toMillis(updateTime));
     }
 
+    public void updateCachedSchedules(List<Channel> cachedChannels) {
+        SwingWorker<Void, Void> updateChannelsWorker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                for (Channel channel : cachedChannels){
+                    guiController.updateChannelSchedule(channel.getId());
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                guiController.refreshTable();
+            }
+        };
+        updateChannelsWorker.execute();
+    }
+
     /**
      * Updates channels in the background and refreshes the menu bar.
      */
@@ -77,5 +99,13 @@ public class BackgroundUpdater {
             }
         };
         updateChannelsWorker.execute();
+    }
+
+    public void printMethod(String s){
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println(s);
+        } else {
+            System.out.println("\t"+s);
+        }
     }
 }

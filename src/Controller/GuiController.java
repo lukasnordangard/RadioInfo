@@ -9,6 +9,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,7 +87,21 @@ public class GuiController {
     public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        view.createMenu(menuBar, "Alternatives", "Update Channels", e -> backgroundUpdater.updateChannels());
+        view.createMenu(menuBar, "Alternatives", "Update Channels", e -> {
+            if(programList.isEmpty()){
+                backgroundUpdater.updateChannels();
+            }else {
+                List<Channel> cachedChannels = new ArrayList<>();
+                for (Channel channel : apiCtrl.getAllChannels()){
+                    if (!channel.getSchedule().isEmpty()){
+                        cachedChannels.add(channel);
+                    }
+                }
+                backgroundUpdater.updateChannels();
+                backgroundUpdater.updateCachedSchedules(cachedChannels);
+
+            }
+        });
         JMenuItem helpMenuItem = new JMenuItem("Help");
         helpMenuItem.addActionListener(e -> showHelpDialog(view.getFrame()));
         menuBar.getMenu(0).addSeparator();
@@ -201,6 +216,8 @@ public class GuiController {
         SwingUtilities.invokeLater(() -> {
             for (Channel channel : apiCtrl.getAllChannels()){
                 if(channel.getId() == channelId) {
+                    String s = "Update " + channel.getName();
+                    backgroundUpdater.printMethod(s);
                     channel.setSchedule(schedule);
                     apiCtrl.filterAndAddChannel();
                     programList = channel.getSchedule();
