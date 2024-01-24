@@ -110,7 +110,7 @@ public class Parser {
                 LocalDateTime endTime = parseProgramEndTime(scheduleElement);
                 String imageUrl = parseProgramImageUrl(scheduleElement);
 
-                // Filter programs after time and handle if id is missing
+                // Filter programs after time and handle if programId or episodeId is missing
                 if (filterProgram(startTime, endTime) && (id != -1 || episodeId != -1)) {
                     Program program = new Program(id, episodeId, title, description, startTime, endTime, imageUrl);
                     programs.add(program);

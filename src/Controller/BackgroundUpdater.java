@@ -3,10 +3,12 @@ package Controller;
 import Model.Channel;
 
 import javax.swing.*;
-import java.util.LinkedList;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -88,17 +90,32 @@ public class BackgroundUpdater {
         // Perform channel updates in the background
         SwingWorker<Void, Void> updateChannelsWorker = new SwingWorker<>() {
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws Exception {
                 apiController.loadChannels();
                 return null;
             }
 
             @Override
             protected void done() {
+                try {
+                    get();
+                } catch (InterruptedException | ExecutionException e) {
+                    handleUncaughtException(e);
+                }
                 guiController.updateChannelMenus();
             }
         };
         updateChannelsWorker.execute();
+    }
+
+    private void handleUncaughtException(Exception e) {
+        if (e.getCause() instanceof UnknownHostException) {
+            guiController.showErrorDialog("API host not reachable. Please check your internet connection.");
+        } else if (e.getCause() instanceof SocketException){
+            guiController.showErrorDialog("(Network unreachable or other socket-related issues)");
+        } else{
+            guiController.showErrorDialog("An unexpected error occurred.");
+        }
     }
 
     public void printMethod(String s){

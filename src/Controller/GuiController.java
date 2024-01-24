@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ public class GuiController {
         this.view = view;
         this.apiCtrl = new ApiController();
         this.backgroundUpdater = new BackgroundUpdater(this, apiCtrl);
+        this.programList = new ArrayList<>();
     }
 
     /**
@@ -195,6 +198,11 @@ public class GuiController {
         JOptionPane.showMessageDialog(frame, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public void showErrorDialog(String message) {
+        JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+
     /**
      * Handles the selection of a channel.
      *
@@ -221,20 +229,31 @@ public class GuiController {
      * @param channelId The ID of the channel to update programs for.
      */
     public void updateChannelSchedule(int channelId) {
-        List<Program> schedule = apiCtrl.getAllEpisodesInSchedule(channelId);
+        try {
+            List<Program> schedule = apiCtrl.getAllEpisodesInSchedule(channelId);
 
-        SwingUtilities.invokeLater(() -> {
-            for (Channel channel : apiCtrl.getAllChannels()){
-                if(channel.getId() == channelId) {
-                    String s = "Update " + channel.getName();
-                    backgroundUpdater.printMethod(s);
-                    channel.setSchedule(schedule);
-                    apiCtrl.filterAndAddChannel();
-                    programList = channel.getSchedule();
+            SwingUtilities.invokeLater(() -> {
+                for (Channel channel : apiCtrl.getAllChannels()){
+                    if(channel.getId() == channelId) {
+                        String s = "Update " + channel.getName();
+                        backgroundUpdater.printMethod(s);
+                        channel.setSchedule(schedule);
+                        apiCtrl.filterAndAddChannel();
+                        programList = channel.getSchedule();
+                    }
                 }
-            }
-        });
-
+            });
+        } catch (SocketException e) {
+            String message = "(Network unreachable or other socket-related issues)";
+            JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+        } catch (UnknownHostException e){
+            String message = "(API host not reachable)";
+            JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            // Handle other exceptions
+            String message = "An unknown error occurred";
+            JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;

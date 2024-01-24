@@ -100,10 +100,18 @@ public class ApiController {
     /**
      * Fetches channel information from the API, categorizes channels, and loads them into lists.
      */
-    public void loadChannels() {
+    public void loadChannels() throws SocketException, UnknownHostException, Exception {
         clearChannels();
 
-        allChannels = getChannels();
+        try {
+            allChannels = getChannels();
+        } catch (SocketException | UnknownHostException e) {
+            // Propagate socket-related and host unreachable exceptions
+            throw e;
+        } catch (Exception e) {
+            // Handle other exceptions
+            throw e;
+        }
 
         filterAndAddChannel();
     }
@@ -132,20 +140,23 @@ public class ApiController {
      * Retrieves a list of radio channels from the API.
      *
      * @return A list of Channel objects representing radio channels.
+     * @throws SocketException      If a socket-related error occurs.
+     * @throws UnknownHostException If the API host is not reachable.
+     * @throws Exception            If an error occurs during the HTTP request.
      */
-    public List<Channel> getChannels() {
+    public List<Channel> getChannels() throws SocketException, UnknownHostException, Exception {
         List<Channel> channels = new ArrayList<>();
         try {
             String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
             String response = sendGetRequest(apiUrl);
 
             channels = parser.parseChannels(response);
-        } catch (SocketException e) {
-            // Handle SocketException (Network unreachable or other socket-related issues)
-            System.out.println("(Network unreachable or other socket-related issues)");
+        } catch (SocketException | UnknownHostException e) {
+            // Propagate socket-related and host unreachable exceptions
+            throw e;
         } catch (Exception e) {
             // Handle other exceptions
-            e.printStackTrace();
+            throw e;
         }
         return channels;
     }
@@ -176,7 +187,18 @@ public class ApiController {
         }
     }
 
-    public List<Program> getSchedule(int channelId, String date) {
+    /**
+     * Retrieves a list of programs for a given channel and date from the API.
+     *
+     * @param channelId The ID of the channel.
+     * @param date      The date for which to retrieve the schedule.
+     * @return A list of Program objects representing programs.
+     * @throws SocketException      If a socket-related error occurs.
+     * @throws UnknownHostException If the API host is not reachable.
+     * @throws Exception            If an error occurs during the HTTP request.
+     */
+    public List<Program> getSchedule(int channelId, String date)
+            throws SocketException, UnknownHostException, Exception {
         List<Program> programs = new ArrayList<>();
 
         try {
@@ -184,20 +206,17 @@ public class ApiController {
             String response = sendGetRequest(apiUrl);
 
             programs = parser.parsePrograms(response);
-        } catch (SocketException e) {
-            // Handle SocketException (Network unreachable or other socket-related issues)
-            System.out.println("(Network unreachable or other socket-related issues)");
-        } catch (UnknownHostException e) {
-            // Handle UnknownHostException (API host not reachable)
-            System.out.println("(API host not reachable)");
+        } catch (SocketException | UnknownHostException e) {
+            // Propagate socket-related and host unreachable exceptions
+            throw e;
         } catch (Exception e) {
             // Handle other exceptions
-            e.printStackTrace();
+            throw e;
         }
         return programs;
     }
 
-    public List<Program> getAllEpisodesInSchedule(int id) {
+    public List<Program> getAllEpisodesInSchedule(int id) throws Exception {
         LocalDate currentDate = java.time.LocalDate.now();
         LocalTime currentTime = LocalTime.now();
 
