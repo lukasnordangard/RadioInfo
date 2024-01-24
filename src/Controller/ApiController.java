@@ -6,7 +6,9 @@ import Model.Program;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -138,7 +140,11 @@ public class ApiController {
             String response = sendGetRequest(apiUrl);
 
             channels = parser.parseChannels(response);
+        } catch (SocketException e) {
+            // Handle SocketException (Network unreachable or other socket-related issues)
+            System.out.println("(Network unreachable or other socket-related issues)");
         } catch (Exception e) {
+            // Handle other exceptions
             e.printStackTrace();
         }
         return channels;
@@ -178,7 +184,14 @@ public class ApiController {
             String response = sendGetRequest(apiUrl);
 
             programs = parser.parsePrograms(response);
+        } catch (SocketException e) {
+            // Handle SocketException (Network unreachable or other socket-related issues)
+            System.out.println("(Network unreachable or other socket-related issues)");
+        } catch (UnknownHostException e) {
+            // Handle UnknownHostException (API host not reachable)
+            System.out.println("(API host not reachable)");
         } catch (Exception e) {
+            // Handle other exceptions
             e.printStackTrace();
         }
         return programs;
