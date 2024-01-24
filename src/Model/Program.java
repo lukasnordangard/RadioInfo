@@ -10,6 +10,7 @@ public class Program {
 
     // Attributes
     private final int id;
+    private final int episodeId;
     private final String title;
     private final String description;
     private final LocalDateTime startTime;
@@ -26,8 +27,9 @@ public class Program {
      * @param endTime       The end time of the program.
      * @param imageUrl      a url to the image of the program.
      */
-    public Program(int id, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
+    public Program(int id, int episodeId, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String imageUrl) {
         this.id = id;
+        this.episodeId = episodeId;
         this.title = title;
         this.description = description;
         this.startTime = startTime;
@@ -42,6 +44,15 @@ public class Program {
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * Gets the ID of the program.
+     *
+     * @return The ID of the program.
+     */
+    public int getEpisodeId() {
+        return episodeId;
     }
 
     /**

@@ -103,6 +103,7 @@ public class Parser {
                 Element scheduleElement = (Element) scheduleNodes.item(i);
 
                 int id = parseProgramId(scheduleElement);
+                int episodeId = parseEpisodeId(scheduleElement);
                 String title = parseProgramTitle(scheduleElement);
                 String description = parseProgramDescription(scheduleElement);
                 LocalDateTime startTime = parseProgramStartTime(scheduleElement);
@@ -110,8 +111,8 @@ public class Parser {
                 String imageUrl = parseProgramImageUrl(scheduleElement);
 
                 // Filter programs after time and handle if id is missing
-                if (filterProgram(startTime, endTime) && id != -1) {
-                    Program program = new Program(id, title, description, startTime, endTime, imageUrl);
+                if (filterProgram(startTime, endTime) && (id != -1 || episodeId != -1)) {
+                    Program program = new Program(id, episodeId, title, description, startTime, endTime, imageUrl);
                     programs.add(program);
                 }
             }
@@ -131,6 +132,11 @@ public class Parser {
     private int parseProgramId(Element scheduleElement) {
         Node idNode = scheduleElement.getElementsByTagName("program").item(0).getAttributes().getNamedItem("id");
         return (idNode != null) ? Integer.parseInt(idNode.getTextContent()) : -1;
+    }
+
+    private int parseEpisodeId(Element scheduleElement) {
+        Node episodeNode = scheduleElement.getElementsByTagName("episodeid").item(0);
+        return (episodeNode != null) ? Integer.parseInt(episodeNode.getTextContent()) : -1;
     }
 
     /**

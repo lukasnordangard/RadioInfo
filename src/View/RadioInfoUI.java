@@ -133,6 +133,7 @@ public class RadioInfoUI {
             JScrollPane descriptionTextArea = createDescriptionTextArea(selectedProgram);
 
             addInfoLabel(infoLabelsPanel, "Program ID:", String.valueOf(selectedProgram.getId()));
+            addInfoLabel(infoLabelsPanel, "Episode ID:", String.valueOf(selectedProgram.getEpisodeId()));
             addInfoLabel(infoLabelsPanel, "Title:", selectedProgram.getTitle());
             addInfoLabel(infoLabelsPanel, "Start Time:", selectedProgram.getStartTime().toString());
             addInfoLabel(infoLabelsPanel, "End Time:", selectedProgram.getEndTime().toString());

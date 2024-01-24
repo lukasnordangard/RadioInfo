@@ -38,14 +38,24 @@ public class GuiController {
     /**
      * Retrieves a program based on its ID.
      *
-     * @param programId The ID of the program to retrieve.
+     * @param episodeId The ID of the episode to retrieve.
      * @return The Program object or null if not found.
      */
-    public Program getProgramById(int programId) {
-        for (Program program : programList) {
-            if (program.getId() == programId) {
-                return program;
+    public Program getProgramById(int episodeId, int id) {
+        if(episodeId != -1){
+            for (Program program : programList) {
+                if (program.getEpisodeId() == episodeId) {
+                    return program;
+                }
             }
+        } else if (id != -1) {
+            for (Program program : programList) {
+                if (program.getId() == id) {
+                    return program;
+                }
+            }
+        } else {
+            return null;
         }
         return null;
     }
@@ -254,7 +264,7 @@ public class GuiController {
      */
     private Program getProgramBySelectedRow(int selectedRow) {
         return (selectedRow >= 0 && selectedRow < programList.size()) ?
-                getProgramById(programList.get(selectedRow).getId()) : null;
+                getProgramById(programList.get(selectedRow).getEpisodeId(), programList.get(selectedRow).getId()) : null;
     }
 
     /**
