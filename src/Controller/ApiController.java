@@ -195,7 +195,7 @@ public class ApiController {
             episodesToReturn.addAll(dayAfter);
         } else {
             List<Program> dayBefore = getSchedule(id,currentDate.minusDays(1).toString());
-            episodesToReturn.addAll(dayBefore);
+            episodesToReturn.addAll(0, dayBefore);
         }
         return episodesToReturn;
     }
