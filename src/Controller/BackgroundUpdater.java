@@ -50,12 +50,6 @@ public class BackgroundUpdater {
         currentTimerTask = new TimerTask() {
             @Override
             public void run() {
-                if (SwingUtilities.isEventDispatchThread()) {
-                    System.out.println("EDT");
-                } else {
-                    System.out.println("Thread");
-                }
-
                 guiController.updateChannelSchedule(channelId);
                 guiController.refreshTable();
             }

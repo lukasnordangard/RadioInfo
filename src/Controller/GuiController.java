@@ -24,7 +24,8 @@ public class GuiController {
     private final ApiController apiCtrl;
     private final RadioInfoUI view;
     private final BackgroundUpdater backgroundUpdater;
-    private List<Program> programList;
+    private final List<Channel> cachedChannels;
+    private List<Program> currentSchedule;
 
     /**
      * Constructor method that initializes GuiController.
@@ -35,53 +36,8 @@ public class GuiController {
         this.view = view;
         this.apiCtrl = new ApiController();
         this.backgroundUpdater = new BackgroundUpdater(this, apiCtrl);
-        this.programList = new ArrayList<>();
-    }
-
-    /**
-     * Retrieves a program based on its ID.
-     *
-     * @param episodeId The ID of the episode to retrieve.
-     * @return The Program object or null if not found.
-     */
-    public Program getProgramById(int episodeId, int id) {
-        if(episodeId != -1){
-            for (Program program : programList) {
-                if (program.getEpisodeId() == episodeId) {
-                    return program;
-                }
-            }
-        } else if (id != -1) {
-            for (Program program : programList) {
-                if (program.getId() == id) {
-                    return program;
-                }
-            }
-        } else {
-            return null;
-        }
-        return null;
-    }
-
-    /**
-     * Requests a refresh of the GUI table.
-     */
-    public void refreshTable() {
-
-        SwingUtilities.invokeLater(() -> {
-            displayChannelSchedule();
-
-            for (Channel channel : apiCtrl.getAllChannels()){
-                if(!channel.getSchedule().isEmpty()) {
-                    System.out.println(channel.getName() + ": " + channel.getSchedule());
-
-                }
-            }
-            System.out.println("===============================");
-
-        });
-
-        //SwingUtilities.invokeLater(this::displayChannelSchedule);
+        this.currentSchedule = new ArrayList<>();
+        this.cachedChannels = new ArrayList<>();
     }
 
     /**
@@ -101,42 +57,21 @@ public class GuiController {
         JMenuBar menuBar = new JMenuBar();
 
         view.createMenu(menuBar, "Alternatives", "Update Channels", e -> {
-            if(programList.isEmpty()){
+            if(cachedChannels.isEmpty()){
                 backgroundUpdater.updateChannels();
             }else {
-                List<Channel> cachedChannels = new ArrayList<>();
-                for (Channel channel : apiCtrl.getAllChannels()){
-                    if (!channel.getSchedule().isEmpty()){
-                        cachedChannels.add(channel);
-                    }
-                }
-                backgroundUpdater.updateChannels();
+                //backgroundUpdater.updateChannels(); // This forgets cached channels before button press
                 backgroundUpdater.updateCachedSchedules(cachedChannels);
-
             }
         });
         JMenuItem helpMenuItem = new JMenuItem("Help");
-        helpMenuItem.addActionListener(e -> showHelpDialog(view.getFrame()));
+        helpMenuItem.addActionListener(e -> showHelpDialog());
         menuBar.getMenu(0).addSeparator();
         menuBar.getMenu(0).add(helpMenuItem);
 
         backgroundUpdater.updateChannels();
 
         view.getFrame().setJMenuBar(menuBar);
-    }
-
-
-    /**
-     * Creates menu items for each channel category in the main menu bar.
-     *
-     * @param menuBar The main menu bar.
-     */
-    public void createChannelMenus(JMenuBar menuBar){
-        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
-        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
-        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
-        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
-        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
     }
 
     /**
@@ -164,6 +99,20 @@ public class GuiController {
     }
 
     /**
+     * Creates menu items for each channel category in the main menu bar.
+     *
+     * @param menuBar The main menu bar.
+     */
+    public void createChannelMenus(JMenuBar menuBar){
+        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
+        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
+        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
+        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
+        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
+    }
+
+
+    /**
      * Creates a channel menu with items for each channel.
      *
      * @param menuBar   The main menu bar.
@@ -183,10 +132,8 @@ public class GuiController {
 
     /**
      * Displays a help dialog for the user.
-     *
-     * @param frame The parent frame for the dialog.
      */
-    public void showHelpDialog(JFrame frame) {
+    public void showHelpDialog() {
         String helpMessage = """
             Welcome to RadioInfoUI!
 
@@ -195,13 +142,12 @@ public class GuiController {
             You can also click on a program in the table to view more information.
             """;
 
-        JOptionPane.showMessageDialog(frame, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void showErrorDialog(String message) {
-        JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
     }
-
 
     /**
      * Handles the selection of a channel.
@@ -209,18 +155,55 @@ public class GuiController {
      * @param channelId The ID of the selected channel.
      */
     public void onChannelSelected(int channelId) {
-        for (Channel channel : apiCtrl.getAllChannels()){
+        boolean channelExistsInCache = false;
 
-
-            if(channel.getId() == channelId){
-                if(channel.getSchedule().isEmpty()){
+        for (Channel channel : apiCtrl.getAllChannels()) {
+            if (channel.getId() == channelId) {
+                if (channel.getSchedule().isEmpty()) {
                     backgroundUpdater.updateChannelScheduleWithTimer(channelId);
-                } else{
-                    programList = channel.getSchedule();
+
+                    // Check if the channel exists in the cachedChannels list
+                    for (Channel cachedChannel : cachedChannels) {
+                        if (cachedChannel.getId() == channelId) {
+                            channelExistsInCache = true;
+                            break;
+                        }
+                    }
+
+                    // Add the channel to the cachedChannels list if it doesn't already exist
+                    if (!channelExistsInCache) {
+                        cachedChannels.add(channel);
+                    }
+                } else {
+                    // OBS: does not update with timer
+                    System.out.println("Channel is cached");
+                    currentSchedule = channel.getSchedule();
                     refreshTable();
                 }
             }
         }
+    }
+
+    /**
+     * Requests a refresh of the GUI table.
+     */
+    public void refreshTable() {
+        SwingUtilities.invokeLater(() -> {
+            displayChannelSchedule();
+
+            if (!cachedChannels.isEmpty()){
+                for (Channel channel : cachedChannels){
+                    if(!channel.getSchedule().isEmpty()) {
+                        System.out.println(channel.getName() + ": " + channel.getSchedule());
+                    }else{
+                        System.out.println("lost cachedChannel");
+                    }
+                }
+                System.out.println("===============================");
+            }
+        });
+
+        //SwingUtilities.invokeLater(this::displayChannelSchedule);
     }
 
     /**
@@ -229,30 +212,31 @@ public class GuiController {
      * @param channelId The ID of the channel to update programs for.
      */
     public void updateChannelSchedule(int channelId) {
+        //TODO: make thread safe
         try {
             List<Program> schedule = apiCtrl.getAllEpisodesInSchedule(channelId);
 
             SwingUtilities.invokeLater(() -> {
-                for (Channel channel : apiCtrl.getAllChannels()){
+                for (Channel channel : cachedChannels){
                     if(channel.getId() == channelId) {
                         String s = "Update " + channel.getName();
                         backgroundUpdater.printMethod(s);
-                        channel.setSchedule(schedule);
-                        apiCtrl.filterAndAddChannel();
-                        programList = channel.getSchedule();
+                        // without this if the items in menu and table gets stacked
+                        if (channel.getSchedule().isEmpty()){
+                            channel.setSchedule(schedule);
+                            apiCtrl.filterAndAddChannel();
+                        }
+                        currentSchedule = channel.getSchedule();
                     }
                 }
             });
         } catch (SocketException e) {
-            String message = "(Network unreachable or other socket-related issues)";
-            JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            showErrorDialog("(Network unreachable or other socket-related issues)");
         } catch (UnknownHostException e){
-            String message = "(API host not reachable)";
-            JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            showErrorDialog("(API host not reachable)");
         } catch (Exception e) {
             // Handle other exceptions
-            String message = "An unknown error occurred";
-            JOptionPane.showMessageDialog(view.getFrame(), message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            showErrorDialog("An unknown error occurred");
         }
     }
 
@@ -282,8 +266,33 @@ public class GuiController {
      * @return The Program object or null if not found.
      */
     private Program getProgramBySelectedRow(int selectedRow) {
-        return (selectedRow >= 0 && selectedRow < programList.size()) ?
-                getProgramById(programList.get(selectedRow).getEpisodeId(), programList.get(selectedRow).getId()) : null;
+        return (selectedRow >= 0 && selectedRow < currentSchedule.size()) ?
+                getProgramById(currentSchedule.get(selectedRow).getEpisodeId(), currentSchedule.get(selectedRow).getId()) : null;
+    }
+
+    /**
+     * Retrieves a program based on its ID.
+     *
+     * @param episodeId The ID of the episode to retrieve.
+     * @return The Program object or null if not found.
+     */
+    public Program getProgramById(int episodeId, int programId) {
+        if(episodeId != -1){
+            for (Program program : currentSchedule) {
+                if (program.getEpisodeId() == episodeId) {
+                    return program;
+                }
+            }
+        } else if (programId != -1) {
+            for (Program program : currentSchedule) {
+                if (program.getId() == programId) {
+                    return program;
+                }
+            }
+        } else {
+            return null;
+        }
+        return null;
     }
 
     /**
@@ -311,7 +320,7 @@ public class GuiController {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        for (Program program : programList) {
+        for (Program program : currentSchedule) {
             Object[] rowData = new Object[]{program.getTitle(), program.getStartTime().format(formatter), program.getEndTime().format(formatter)};
             model.addRow(rowData);
         }
