@@ -66,18 +66,18 @@ public class CacheUpdater extends SwingWorker<List<Channel>, Void> {
             } else {
                 // Handle the case where the background task failed
                 String message = "Failed to retrieve schedule.";
-                JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                guiController.showErrorDialog(message);
             }
         } catch (Exception e) {
             if (e.getCause() instanceof UnknownHostException) {
                 String message = "API host not reachable. Please check your internet connection.";
-                JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                guiController.showErrorDialog(message);
             } else if (e.getCause() instanceof SocketException){
                 String message = "Network unreachable or other socket-related issues. Please check your internet connection.";
-                JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                guiController.showErrorDialog(message);
             } else{
                 String message = "An unexpected error occurred.";
-                JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                guiController.showErrorDialog(message);
             }
         }
     }

@@ -56,7 +56,7 @@ public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
             } else {
                 // Handle the case where the background task failed
                 String message = "Failed to retrieve schedule.";
-                JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                guiController.showErrorDialog(message);
             }
         } catch (Exception e) {
             if (e.getCause() instanceof UnknownHostException) {
