@@ -1,6 +1,5 @@
 package Controller;
 
-import Model.Channel;
 import Model.Program;
 
 import javax.swing.*;
