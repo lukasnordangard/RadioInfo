@@ -11,6 +11,9 @@ import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controller class responsible for managing the graphical user
@@ -23,6 +26,7 @@ public class GuiController {
     private final RadioInfoUI view;
     private List<Channel> cachedChannels;
     private List<Program> currentSchedule;
+    private final Timer timer;
 
     /**
      * Constructor method that initializes GuiController.
@@ -34,6 +38,7 @@ public class GuiController {
         this.menuController = new MenuController(this, this.view);
         this.currentSchedule = new ArrayList<>();
         this.cachedChannels = new ArrayList<>();
+        timer = new Timer();
     }
 
     /**
@@ -69,8 +74,27 @@ public class GuiController {
     public void createAndShowGUI() {
         view.initializeFrame();
         menuController.createMenuBar();
+        startTimer();
         view.createMainPanel();
         view.getFrame().setVisible(true);
+    }
+
+    private void startTimer() {
+        GuiController guiCtrl = this;
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(() -> {
+                    ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
+                    channelUpdater.execute();
+                    CacheUpdater cacheUpdater = new CacheUpdater(menuController, guiCtrl, menuController.getLastSelectedChannel());
+                    cacheUpdater.execute();
+                    System.out.println("timer");
+                });
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask,0, TimeUnit.MINUTES.toMillis(60));
     }
 
     /**

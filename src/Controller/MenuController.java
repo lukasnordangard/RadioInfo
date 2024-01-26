@@ -31,6 +31,10 @@ public class MenuController {
         this.guiController = guiController;
     }
 
+    public int getLastSelectedChannel() {
+        return lastSelectedChannel;
+    }
+
     /**
      * Gets all of the channels in the menu.
      *

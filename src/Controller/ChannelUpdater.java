@@ -27,6 +27,7 @@ public class ChannelUpdater extends SwingWorker<List<Channel>, Void> {
 
     @Override
     protected List<Channel> doInBackground() throws Exception {
+        System.out.println("Update channels");
         return apiController.getChannels();
     }
 
