@@ -21,12 +21,6 @@ import java.util.List;
 public class ApiController {
 
     // Lists to categorize channels based on their names
-    private List<Channel> allChannels = new ArrayList<>();
-    private final List<Channel> p1 = new ArrayList<>();
-    private final List<Channel> p2 = new ArrayList<>();
-    private final List<Channel> p3 = new ArrayList<>();
-    private final List<Channel> p4 = new ArrayList<>();
-    private final List<Channel> other = new ArrayList<>();
     private final Parser parser;
 
     /**
@@ -34,106 +28,6 @@ public class ApiController {
      */
     public ApiController(){
         this.parser = new Parser();
-    }
-
-    public List<Channel> getAllChannels() {
-        return allChannels;
-    }
-
-    /**
-     * Retrieves the list of channels categorized as P1.
-     *
-     * @return List of P1 channels.
-     */
-    public List<Channel> getP1() {
-        return p1;
-    }
-
-    /**
-     * Retrieves the list of channels categorized as P2.
-     *
-     * @return List of P2 channels.
-     */
-    public List<Channel> getP2() {
-        return p2;
-    }
-
-    /**
-     * Retrieves the list of channels categorized as P3.
-     *
-     * @return List of P3 channels.
-     */
-    public List<Channel> getP3() {
-        return p3;
-    }
-
-    /**
-     * Retrieves the list of channels categorized as P4.
-     *
-     * @return List of P4 channels.
-     */
-    public List<Channel> getP4() {
-        return p4;
-    }
-
-    /**
-     * Retrieves the list of channels categorized as 'Other'.
-     *
-     * @return List of 'Other' channels.
-     */
-    public List<Channel> getOther() {
-        return other;
-    }
-
-    /**
-     * Clears the lists containing channels for different categories.
-     * Clears the lists p1, p2, p3, p4, and other.
-     */
-    private void clearChannels(){
-        p1.clear();
-        p2.clear();
-        p3.clear();
-        p4.clear();
-        other.clear();
-    }
-
-    /**
-     * Fetches channel information from the API, categorizes channels, and loads them into lists.
-     */
-    public void loadChannels() throws SocketException, UnknownHostException, Exception {
-        clearChannels();
-
-        try {
-            allChannels = getChannels();
-        } catch (SocketException | UnknownHostException e) {
-            // Propagate socket-related and host unreachable exceptions
-            throw e;
-        } catch (Exception e) {
-            // Handle other exceptions
-            throw e;
-        }
-
-        filterAndAddChannel();
-    }
-
-    /**
-     * Filters and adds a channel to the appropriate list based on its name.
-     */
-    public void filterAndAddChannel() {
-        for (Channel channel : allChannels) {
-            String channelName = channel.getName();
-            if (channelName.contains("P1")) {
-                p1.add(channel);
-            } else if (channelName.contains("P2")) {
-                p2.add(channel);
-            } else if (channelName.contains("P3")) {
-                p3.add(channel);
-            } else if (channelName.contains("P4")) {
-                p4.add(channel);
-            } else {
-                other.add(channel);
-            }
-        }
     }
 
     /**

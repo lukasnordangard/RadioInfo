@@ -21,7 +21,8 @@ import java.util.List;
 public class GuiController {
 
     // Attributes
-    private final ApiController apiCtrl;
+    private final ApiController apiController;
+    private final MenuController menuController;
     private final RadioInfoUI view;
     private final BackgroundUpdater backgroundUpdater;
     private final List<Channel> cachedChannels;
@@ -34,8 +35,9 @@ public class GuiController {
      */
     public GuiController(RadioInfoUI view) {
         this.view = view;
-        this.apiCtrl = new ApiController();
-        this.backgroundUpdater = new BackgroundUpdater(this, apiCtrl);
+        this.apiController = new ApiController();
+        this.menuController = new MenuController(this, this.view);
+        this.backgroundUpdater = new BackgroundUpdater(this, apiController);
         this.currentSchedule = new ArrayList<>();
         this.cachedChannels = new ArrayList<>();
     }
@@ -45,89 +47,17 @@ public class GuiController {
      */
     public void createAndShowGUI() {
         view.initializeFrame();
-        createMenuBar();
+        menuController.createMenuBar();
         view.createMainPanel();
         view.getFrame().setVisible(true);
     }
 
-    /**
-     * Creates the menu bar for the main GUI.
-     */
-    public void createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-
-        view.createMenu(menuBar, "Alternatives", "Update Channels", e -> {
-            if(cachedChannels.isEmpty()){
-                backgroundUpdater.updateChannels();
-            }else {
-                //backgroundUpdater.updateChannels(); // This forgets cached channels before button press
-                backgroundUpdater.updateCachedSchedules(cachedChannels);
-            }
-        });
-        JMenuItem helpMenuItem = new JMenuItem("Help");
-        helpMenuItem.addActionListener(e -> showHelpDialog());
-        menuBar.getMenu(0).addSeparator();
-        menuBar.getMenu(0).add(helpMenuItem);
-
-        backgroundUpdater.updateChannels();
-
-        view.getFrame().setJMenuBar(menuBar);
+    public List<Channel> getCachedChannels(){
+        return cachedChannels;
     }
 
-    /**
-     * Updates the channel menus in the main GUI's menu bar.
-     * Removes existing channel menus and recreates them.
-     */
-    public void updateChannelMenus() {
-        JMenuBar menuBar = view.getFrame().getJMenuBar();
-
-        // Remove existing channel menus
-        for (int i = menuBar.getMenuCount() - 1; i >= 0; i--) {
-            JMenu menu = menuBar.getMenu(i);
-            if (menu.getText().equals("P1") || menu.getText().equals("P2") || menu.getText().equals("P3") ||
-                    menu.getText().equals("P4") || menu.getText().equals("Other")) {
-                menuBar.remove(i);
-            }
-        }
-
-        // Recreate channel menus
-        createChannelMenus(menuBar);
-
-        // Revalidate and repaint the main GUI frame
-        view.getFrame().revalidate();
-        view.getFrame().repaint();
-    }
-
-    /**
-     * Creates menu items for each channel category in the main menu bar.
-     *
-     * @param menuBar The main menu bar.
-     */
-    public void createChannelMenus(JMenuBar menuBar){
-        createChannelMenu(menuBar, "P1", apiCtrl.getP1());
-        createChannelMenu(menuBar, "P2", apiCtrl.getP2());
-        createChannelMenu(menuBar, "P3", apiCtrl.getP3());
-        createChannelMenu(menuBar, "P4", apiCtrl.getP4());
-        createChannelMenu(menuBar, "Other", apiCtrl.getOther());
-    }
-
-
-    /**
-     * Creates a channel menu with items for each channel.
-     *
-     * @param menuBar   The main menu bar.
-     * @param menuName  The name of the channel menu.
-     * @param channels  The list of channels to be displayed in the menu.
-     */
-    public void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
-        JMenu channelMenu = new JMenu(menuName);
-        for (Channel channel : channels) {
-            JMenuItem channelMenuItem = new JMenuItem(channel.getName());
-            int id = channel.getId();
-            channelMenuItem.addActionListener(e -> onChannelSelected(id));
-            channelMenu.add(channelMenuItem);
-        }
-        menuBar.add(channelMenu);
+    public void setCurrentSchedule(List<Program> currentSchedule) {
+        this.currentSchedule = currentSchedule;
     }
 
     /**
@@ -157,30 +87,29 @@ public class GuiController {
     public void onChannelSelected(int channelId) {
         boolean channelExistsInCache = false;
 
-        for (Channel channel : apiCtrl.getAllChannels()) {
-            if (channel.getId() == channelId) {
-                if (channel.getSchedule().isEmpty()) {
-                    backgroundUpdater.updateChannelScheduleWithTimer(channelId);
+        Channel channel = menuController.getChannelById(channelId);
 
-                    // Check if the channel exists in the cachedChannels list
-                    for (Channel cachedChannel : cachedChannels) {
-                        if (cachedChannel.getId() == channelId) {
-                            channelExistsInCache = true;
-                            break;
-                        }
-                    }
+        if (channel != null && channel.getSchedule().isEmpty()) {
+            ScheduleUpdater scheduleUpdater = new ScheduleUpdater(menuController,this,channelId);
+            scheduleUpdater.execute();
 
-                    // Add the channel to the cachedChannels list if it doesn't already exist
-                    if (!channelExistsInCache) {
-                        cachedChannels.add(channel);
-                    }
-                } else {
-                    // OBS: does not update with timer
-                    System.out.println("Channel is cached");
-                    currentSchedule = channel.getSchedule();
-                    refreshTable();
+            // Check if the channel exists in the cachedChannels list
+            for (Channel cachedChannel : cachedChannels) {
+                if (cachedChannel.getId() == channelId) {
+                    channelExistsInCache = true;
+                    break;
                 }
             }
+
+            // Add the channel to the cachedChannels list if it doesn't already exist
+            if (!channelExistsInCache) {
+                cachedChannels.add(channel);
+            }
+        } else {
+            // OBS: does not update with timer
+            System.out.println("Channel is cached");
+            currentSchedule = channel.getSchedule();
+            refreshTable();
         }
     }
 
@@ -214,7 +143,7 @@ public class GuiController {
     public void updateChannelSchedule(int channelId) {
         //TODO: make thread safe
         try {
-            List<Program> schedule = apiCtrl.getAllEpisodesInSchedule(channelId);
+            List<Program> schedule = apiController.getAllEpisodesInSchedule(channelId);
 
             SwingUtilities.invokeLater(() -> {
                 for (Channel channel : cachedChannels){
@@ -224,7 +153,7 @@ public class GuiController {
                         // without this if the items in menu and table gets stacked
                         if (channel.getSchedule().isEmpty()){
                             channel.setSchedule(schedule);
-                            apiCtrl.filterAndAddChannel();
+                            menuController.filterAndAddChannel();
                         }
                         currentSchedule = channel.getSchedule();
                     }

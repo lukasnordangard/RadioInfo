@@ -50,7 +50,7 @@ public class BackgroundUpdater {
         currentTimerTask = new TimerTask() {
             @Override
             public void run() {
-                guiController.updateChannelSchedule(channelId);
+                //guiController.updateChannelSchedule(channelId);
                 guiController.refreshTable();
             }
         };
@@ -85,7 +85,7 @@ public class BackgroundUpdater {
         SwingWorker<Void, Void> updateChannelsWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
-                apiController.loadChannels();
+                //apiController.loadChannels();
                 return null;
             }
 
@@ -96,7 +96,7 @@ public class BackgroundUpdater {
                 } catch (InterruptedException | ExecutionException e) {
                     handleUncaughtException(e);
                 }
-                guiController.updateChannelMenus();
+                //guiController.updateChannelMenus();
             }
         };
         updateChannelsWorker.execute();
