@@ -7,14 +7,22 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
+/**
+ * ChannelUpdater updates the list of radio channels in the background. It retrieves
+ * channels from the API, manages menu updates, and handles exceptions during the process.
+ */
 public class ChannelUpdater extends SwingWorker<List<Channel>, Void> {
 
-    private final MenuController menuController;
+    // Attributes
     private final ApiController apiController;
+    private final MenuController menuController;
 
+    /**
+     * Constructor method that initializes ScheduleUpdater.
+     */
     public ChannelUpdater(MenuController menuController) {
-        this.menuController = menuController;
         this.apiController = new ApiController();
+        this.menuController = menuController;
     }
 
     @Override
@@ -34,7 +42,8 @@ public class ChannelUpdater extends SwingWorker<List<Channel>, Void> {
                 menuController.updateChannelMenus();
             } else {
                 // Handle the case where the background task failed
-                System.err.println("Failed to retrieve channels.");
+                String message = "Failed to retrieve channels.";
+                JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
             if (e.getCause() instanceof UnknownHostException) {

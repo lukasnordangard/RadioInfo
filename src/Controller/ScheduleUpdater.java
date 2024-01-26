@@ -8,13 +8,21 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
+/**
+ * ScheduleUpdater updates the schedule for a specific radio channel in the background.
+ * It fetches channel schedules from the API, manages GUI updates, and handles exceptions.
+ */
 public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
 
+    // Attributes
     private final ApiController apiController;
     private final MenuController menuController;
     private final GuiController guiController;
     private final int channelId;
 
+    /**
+     * Constructor method that initializes ScheduleUpdater.
+     */
     public ScheduleUpdater(MenuController menuController, GuiController guiController, int channelId) {
         this.apiController = new ApiController();
         this.menuController = menuController;

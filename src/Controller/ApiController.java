@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This controller class is responsible for all API communication and uses the
+ * Controller class responsible for all API communication and uses the
  * model classes to display information in the GUI.
  */
 public class ApiController {
 
-    // Lists to categorize channels based on their names
+    // Attributes
     private final Parser parser;
 
     /**
@@ -31,8 +31,8 @@ public class ApiController {
     /**
      * Retrieves a list of radio channels from the API.
      *
-     * @return A list of Channel objects representing radio channels.
-     * @throws Exception            If an error occurs during the HTTP request.
+     * @return              A list of Channel objects representing radio channels.
+     * @throws Exception    If an error occurs during the HTTP request.
      */
     public List<Channel> getChannels() throws Exception {
         List<Channel> channels;
@@ -47,9 +47,9 @@ public class ApiController {
     /**
      * Sends an HTTP GET request to the specified URL and returns the response as a string.
      *
-     * @param apiUrl The URL to send the GET request to.
-     * @return The response as a string.
-     * @throws Exception If an error occurs during the HTTP request.
+     * @param apiUrl        The URL to send the GET request to.
+     * @return              The response as a string.
+     * @throws Exception    If an error occurs during the HTTP request.
      */
     private static String sendGetRequest(String apiUrl) throws Exception {
         URL url = new URL(apiUrl);
@@ -73,10 +73,10 @@ public class ApiController {
     /**
      * Retrieves a list of programs for a given channel and date from the API.
      *
-     * @param channelId The ID of the channel.
-     * @param date      The date for which to retrieve the schedule.
-     * @return A list of Program objects representing programs.
-     * @throws Exception            If an error occurs during the HTTP request.
+     * @param channelId     The ID of the channel.
+     * @param date          The date for which to retrieve the schedule.
+     * @return              A list of Program objects representing programs.
+     * @throws Exception    If an error occurs during the HTTP request.
      */
     public List<Program> getSchedule(int channelId, String date)
             throws Exception {
@@ -90,6 +90,13 @@ public class ApiController {
         return programs;
     }
 
+    /**
+     * Constructs a list consisting of all episodes in a schedule based on date and time.
+     *
+     * @param channelId     The id of the channel to the schedule.
+     * @return              The list of programs consisting of the complete schedule.
+     * @throws Exception    If an error occurs during the HTTP request.
+     */
     public List<Program> getAllEpisodesInSchedule(int channelId) throws Exception {
         LocalDate currentDate = java.time.LocalDate.now();
         LocalTime currentTime = LocalTime.now();

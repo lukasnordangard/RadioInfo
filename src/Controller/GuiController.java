@@ -36,8 +36,31 @@ public class GuiController {
         this.cachedChannels = new ArrayList<>();
     }
 
+    /**
+     * Sets a list of cashed channels.
+     *
+     * @param channels cached channels.
+     */
     public void setCachedChannels(List<Channel> channels){
         cachedChannels = channels;
+    }
+
+    /**
+     * Gets the list of cached channels.
+     *
+     * @return list of cached channels.
+     */
+    public List<Channel> getCachedChannels(){
+        return cachedChannels;
+    }
+
+    /**
+     * Sets the current schedule to be displayed.
+     *
+     * @param currentSchedule schedule to be displayed.
+     */
+    public void setCurrentSchedule(List<Program> currentSchedule) {
+        this.currentSchedule = currentSchedule;
     }
 
     /**
@@ -48,14 +71,6 @@ public class GuiController {
         menuController.createMenuBar();
         view.createMainPanel();
         view.getFrame().setVisible(true);
-    }
-
-    public List<Channel> getCachedChannels(){
-        return cachedChannels;
-    }
-
-    public void setCurrentSchedule(List<Program> currentSchedule) {
-        this.currentSchedule = currentSchedule;
     }
 
     /**
@@ -73,6 +88,11 @@ public class GuiController {
         JOptionPane.showMessageDialog(null, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Displays a error dialog for the user.
+     *
+     * @param message Errormessage to be displayed.
+     */
     public void showErrorDialog(String message) {
         JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.INFORMATION_MESSAGE);
     }

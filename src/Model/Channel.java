@@ -44,10 +44,20 @@ public class Channel {
         return name;
     }
 
+    /**
+     * Gets the schedule of the channel.
+     *
+     * @return The channel schedule.
+     */
     public List<Program> getSchedule() {
         return schedule;
     }
 
+    /**
+     * Sets the schedule of the channel.
+     *
+     * @param schedule The channel schedule.
+     */
     public void setSchedule(List<Program> schedule){
         this.schedule.clear();
         for (Program episode : schedule) {
@@ -55,6 +65,11 @@ public class Channel {
         }
     }
 
+    /**
+     * Adds one episode to the schedule of the channel.
+     *
+     * @param program The episode to be added.
+     */
     public void addEpisodeToSchedule(Program program) {
         this.schedule.add(program);
     }

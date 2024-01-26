@@ -7,29 +7,44 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller class responsible for constructing and managing the menu bar.
+ */
 public class MenuController {
 
-    private final RadioInfoUI view;
-    private final GuiController guiController;
-    private int lastSelectedChannel = -1;
-
-
+    // Attributes
     private List<Channel> allChannels = new ArrayList<>();
     private final List<Channel> p1 = new ArrayList<>();
     private final List<Channel> p2 = new ArrayList<>();
     private final List<Channel> p3 = new ArrayList<>();
     private final List<Channel> p4 = new ArrayList<>();
     private final List<Channel> other = new ArrayList<>();
+    private final RadioInfoUI view;
+    private final GuiController guiController;
+    private int lastSelectedChannel = -1;
 
+    /**
+     * Constructor method that initializes MenuController.
+     */
     public MenuController(GuiController guiController, RadioInfoUI view){
         this.view = view;
         this.guiController = guiController;
     }
 
+    /**
+     * Gets all of the channels in the menu.
+     *
+     * @return list of all channels.
+     */
     public List<Channel> getAllChannels(){
         return allChannels;
     }
 
+    /**
+     * Sets all channels in the menu.
+     *
+     * @param allChannels list of all channels.
+     */
     public void setAllChannels(List<Channel> allChannels) {
         this.allChannels = allChannels;
     }
@@ -79,7 +94,7 @@ public class MenuController {
             }else {
                 ChannelUpdater channelUpdater = new ChannelUpdater(this);
                 channelUpdater.execute();
-                CacheUpdater cacheUpdater = new CacheUpdater(guiController, this,guiController.getCachedChannels(), lastSelectedChannel);
+                CacheUpdater cacheUpdater = new CacheUpdater(this, guiController, lastSelectedChannel);
                 cacheUpdater.execute();
             }
         });
