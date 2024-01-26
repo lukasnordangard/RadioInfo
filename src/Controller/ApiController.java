@@ -78,7 +78,7 @@ public class ApiController {
      * @return              A list of Program objects representing programs.
      * @throws Exception    If an error occurs during the HTTP request.
      */
-    public List<Program> getSchedule(int channelId, String date)
+    private List<Program> getSchedule(int channelId, String date)
             throws Exception {
         List<Program> programs;
 

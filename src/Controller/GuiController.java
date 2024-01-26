@@ -108,7 +108,7 @@ public class GuiController {
         for (Channel channel : menuController.getAllChannels()) {
             if (channel.getId() == channelId) {
                 if (channel.getSchedule().isEmpty()) {
-                    ScheduleUpdater scheduleUpdater = new ScheduleUpdater(menuController,this,channelId);
+                    ScheduleUpdater scheduleUpdater = new ScheduleUpdater(this, channelId);
                     scheduleUpdater.execute();
 
                     // Check if the channel exists in the cachedChannels list
@@ -128,6 +128,17 @@ public class GuiController {
                     currentSchedule = channel.getSchedule();
                     refreshTable();
                 }
+            }
+        }
+    }
+
+    public void updateSchedule(int channelId, List<Program> schedule){
+        for (Channel channel : getCachedChannels()){
+            if(channel.getId() == channelId) {
+                String s = "Update " + channel.getName();
+                System.out.println(s);
+                channel.setSchedule(schedule);
+                setCurrentSchedule(channel.getSchedule());
             }
         }
     }
@@ -190,7 +201,7 @@ public class GuiController {
      * @param episodeId The ID of the episode to retrieve.
      * @return The Program object or null if not found.
      */
-    public Program getProgramById(int episodeId, int programId) {
+    private Program getProgramById(int episodeId, int programId) {
         if(episodeId != -1){
             for (Program program : currentSchedule) {
                 if (program.getEpisodeId() == episodeId) {

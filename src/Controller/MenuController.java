@@ -138,7 +138,7 @@ public class MenuController {
      *
      * @param menuBar The main menu bar.
      */
-    public void createChannelMenus(JMenuBar menuBar){
+    private void createChannelMenus(JMenuBar menuBar){
         createChannelMenu(menuBar, "P1", p1);
         createChannelMenu(menuBar, "P2", p2);
         createChannelMenu(menuBar, "P3", p3);
@@ -153,7 +153,7 @@ public class MenuController {
      * @param menuName  The name of the channel menu.
      * @param channels  The list of channels to be displayed in the menu.
      */
-    public void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
+    private void createChannelMenu(JMenuBar menuBar, String menuName, List<Channel> channels) {
         JMenu channelMenu = new JMenu(menuName);
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());

@@ -16,16 +16,14 @@ public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
 
     // Attributes
     private final ApiController apiController;
-    private final MenuController menuController;
     private final GuiController guiController;
     private final int channelId;
 
     /**
      * Constructor method that initializes ScheduleUpdater.
      */
-    public ScheduleUpdater(MenuController menuController, GuiController guiController, int channelId) {
+    public ScheduleUpdater(GuiController guiController, int channelId) {
         this.apiController = new ApiController();
-        this.menuController = menuController;
         this.guiController = guiController;
         this.channelId = channelId;
     }
@@ -41,18 +39,8 @@ public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
             List<Program> schedule = get();
 
             if (schedule != null) {
-                for (Channel channel : guiController.getCachedChannels()){
-                    if(channel.getId() == channelId) {
-                        String s = "Update " + channel.getName();
-                        System.out.println(s);
-                        // without this if the items in menu and table gets stacked
-                        if (channel.getSchedule().isEmpty()){
-                            channel.setSchedule(schedule);
-                            menuController.filterAndAddChannel();
-                        }
-                        guiController.setCurrentSchedule(channel.getSchedule());
-                    }
-                }
+                guiController.updateSchedule(channelId, schedule);
+                guiController.refreshTable();
             } else {
                 // Handle the case where the background task failed
                 String message = "Failed to retrieve schedule.";
@@ -70,6 +58,5 @@ public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
                 guiController.showErrorDialog(message);
             }
         }
-        guiController.refreshTable();
     }
 }
