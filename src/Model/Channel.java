@@ -49,6 +49,7 @@ public class Channel {
     }
 
     public void setSchedule(List<Program> schedule){
+        this.schedule.clear();
         for (Program episode : schedule) {
             addEpisodeToSchedule(episode);
         }

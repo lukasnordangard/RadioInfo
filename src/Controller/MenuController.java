@@ -10,8 +10,9 @@ import java.util.List;
 public class MenuController {
 
     private final RadioInfoUI view;
-    private final ApiController apiController;
     private final GuiController guiController;
+    private int lastSelectedChannel = -1;
+
 
     private List<Channel> allChannels = new ArrayList<>();
     private final List<Channel> p1 = new ArrayList<>();
@@ -22,7 +23,6 @@ public class MenuController {
 
     public MenuController(GuiController guiController, RadioInfoUI view){
         this.view = view;
-        this.apiController = new ApiController();
         this.guiController = guiController;
     }
 
@@ -32,15 +32,6 @@ public class MenuController {
 
     public void setAllChannels(List<Channel> allChannels) {
         this.allChannels = allChannels;
-    }
-
-    public Channel getChannelById(int channelId){
-        for (Channel channel : getAllChannels()) {
-            if (channel.getId() == channelId) {
-                return channel;
-            }
-        }
-        return null;
     }
 
     /**
@@ -83,13 +74,13 @@ public class MenuController {
 
         view.createMenu(menuBar, "Alternatives", "Update Channels", e -> {
             if(guiController.getCachedChannels().isEmpty()){
-                //backgroundUpdater.updateChannelsOnBackground();
-                ChannelUpdater channelUpdater = new ChannelUpdater(this, apiController);
+                ChannelUpdater channelUpdater = new ChannelUpdater(this);
                 channelUpdater.execute();
             }else {
-                //backgroundUpdater.updateChannels(); // This forgets cached channels before button press
-                BackgroundUpdater backgroundUpdater = new BackgroundUpdater(guiController, apiController);
-                backgroundUpdater.updateCachedSchedules(guiController.getCachedChannels());
+                ChannelUpdater channelUpdater = new ChannelUpdater(this);
+                channelUpdater.execute();
+                CacheUpdater cacheUpdater = new CacheUpdater(guiController, this,guiController.getCachedChannels(), lastSelectedChannel);
+                cacheUpdater.execute();
             }
         });
         JMenuItem helpMenuItem = new JMenuItem("Help");
@@ -97,7 +88,7 @@ public class MenuController {
         menuBar.getMenu(0).addSeparator();
         menuBar.getMenu(0).add(helpMenuItem);
 
-        ChannelUpdater channelUpdater = new ChannelUpdater(this, apiController);
+        ChannelUpdater channelUpdater = new ChannelUpdater(this);
         channelUpdater.execute();
 
         view.getFrame().setJMenuBar(menuBar);
@@ -152,7 +143,10 @@ public class MenuController {
         for (Channel channel : channels) {
             JMenuItem channelMenuItem = new JMenuItem(channel.getName());
             int id = channel.getId();
-            channelMenuItem.addActionListener(e -> guiController.onChannelSelected(id));
+            channelMenuItem.addActionListener(e -> {
+                lastSelectedChannel = id;
+                guiController.onChannelSelected(id);
+            });
             channelMenu.add(channelMenuItem);
         }
         menuBar.add(channelMenu);

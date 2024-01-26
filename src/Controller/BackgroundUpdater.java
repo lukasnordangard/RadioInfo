@@ -64,7 +64,7 @@ public class BackgroundUpdater {
             @Override
             protected Void doInBackground() {
                 for (Channel channel : cachedChannels){
-                    guiController.updateChannelSchedule(channel.getId());
+                    //guiController.updateChannelSchedule(channel.getId());
                 }
                 return null;
             }

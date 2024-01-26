@@ -12,9 +12,9 @@ public class ChannelUpdater extends SwingWorker<List<Channel>, Void> {
     private final MenuController menuController;
     private final ApiController apiController;
 
-    public ChannelUpdater(MenuController menuController, ApiController apiController) {
+    public ChannelUpdater(MenuController menuController) {
         this.menuController = menuController;
-        this.apiController = apiController;
+        this.apiController = new ApiController();
     }
 
     @Override

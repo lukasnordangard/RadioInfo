@@ -6,9 +6,7 @@ import Model.Program;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -34,24 +32,15 @@ public class ApiController {
      * Retrieves a list of radio channels from the API.
      *
      * @return A list of Channel objects representing radio channels.
-     * @throws SocketException      If a socket-related error occurs.
-     * @throws UnknownHostException If the API host is not reachable.
      * @throws Exception            If an error occurs during the HTTP request.
      */
-    public List<Channel> getChannels() throws SocketException, UnknownHostException, Exception {
-        List<Channel> channels = new ArrayList<>();
-        try {
-            String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
-            String response = sendGetRequest(apiUrl);
+    public List<Channel> getChannels() throws Exception {
+        List<Channel> channels;
+        String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
+        String response = sendGetRequest(apiUrl);
 
-            channels = parser.parseChannels(response);
-        } catch (SocketException | UnknownHostException e) {
-            // Propagate socket-related and host unreachable exceptions
-            throw e;
-        } catch (Exception e) {
-            // Handle other exceptions
-            throw e;
-        }
+        channels = parser.parseChannels(response);
+
         return channels;
     }
 
@@ -87,40 +76,31 @@ public class ApiController {
      * @param channelId The ID of the channel.
      * @param date      The date for which to retrieve the schedule.
      * @return A list of Program objects representing programs.
-     * @throws SocketException      If a socket-related error occurs.
-     * @throws UnknownHostException If the API host is not reachable.
      * @throws Exception            If an error occurs during the HTTP request.
      */
     public List<Program> getSchedule(int channelId, String date)
-            throws SocketException, UnknownHostException, Exception {
-        List<Program> programs = new ArrayList<>();
+            throws Exception {
+        List<Program> programs;
 
-        try {
-            String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId + "&date=" + date;
-            String response = sendGetRequest(apiUrl);
+        String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId + "&date=" + date;
+        String response = sendGetRequest(apiUrl);
 
-            programs = parser.parsePrograms(response);
-        } catch (SocketException | UnknownHostException e) {
-            // Propagate socket-related and host unreachable exceptions
-            throw e;
-        } catch (Exception e) {
-            // Handle other exceptions
-            throw e;
-        }
+        programs = parser.parsePrograms(response);
+
         return programs;
     }
 
-    public List<Program> getAllEpisodesInSchedule(int id) throws Exception {
+    public List<Program> getAllEpisodesInSchedule(int channelId) throws Exception {
         LocalDate currentDate = java.time.LocalDate.now();
         LocalTime currentTime = LocalTime.now();
 
-        List<Program> dayCurrent = getSchedule(id,currentDate.toString());
+        List<Program> dayCurrent = getSchedule(channelId,currentDate.toString());
         List<Program> episodesToReturn = new ArrayList<>(dayCurrent);
         if (currentTime.getHour() >= 12) {
-            List<Program> dayAfter = getSchedule(id,currentDate.plusDays(1).toString());
+            List<Program> dayAfter = getSchedule(channelId,currentDate.plusDays(1).toString());
             episodesToReturn.addAll(dayAfter);
         } else {
-            List<Program> dayBefore = getSchedule(id,currentDate.minusDays(1).toString());
+            List<Program> dayBefore = getSchedule(channelId,currentDate.minusDays(1).toString());
             episodesToReturn.addAll(0, dayBefore);
         }
         return episodesToReturn;

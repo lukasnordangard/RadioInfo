@@ -8,8 +8,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +19,9 @@ import java.util.List;
 public class GuiController {
 
     // Attributes
-    private final ApiController apiController;
     private final MenuController menuController;
     private final RadioInfoUI view;
-    private final BackgroundUpdater backgroundUpdater;
-    private final List<Channel> cachedChannels;
+    private List<Channel> cachedChannels;
     private List<Program> currentSchedule;
 
     /**
@@ -35,11 +31,13 @@ public class GuiController {
      */
     public GuiController(RadioInfoUI view) {
         this.view = view;
-        this.apiController = new ApiController();
         this.menuController = new MenuController(this, this.view);
-        this.backgroundUpdater = new BackgroundUpdater(this, apiController);
         this.currentSchedule = new ArrayList<>();
         this.cachedChannels = new ArrayList<>();
+    }
+
+    public void setCachedChannels(List<Channel> channels){
+        cachedChannels = channels;
     }
 
     /**
@@ -87,29 +85,30 @@ public class GuiController {
     public void onChannelSelected(int channelId) {
         boolean channelExistsInCache = false;
 
-        Channel channel = menuController.getChannelById(channelId);
+        for (Channel channel : menuController.getAllChannels()) {
+            if (channel.getId() == channelId) {
+                if (channel.getSchedule().isEmpty()) {
+                    ScheduleUpdater scheduleUpdater = new ScheduleUpdater(menuController,this,channelId);
+                    scheduleUpdater.execute();
 
-        if (channel != null && channel.getSchedule().isEmpty()) {
-            ScheduleUpdater scheduleUpdater = new ScheduleUpdater(menuController,this,channelId);
-            scheduleUpdater.execute();
+                    // Check if the channel exists in the cachedChannels list
+                    for (Channel cachedChannel : cachedChannels) {
+                        if (cachedChannel.getId() == channelId) {
+                            channelExistsInCache = true;
+                            break;
+                        }
+                    }
 
-            // Check if the channel exists in the cachedChannels list
-            for (Channel cachedChannel : cachedChannels) {
-                if (cachedChannel.getId() == channelId) {
-                    channelExistsInCache = true;
-                    break;
+                    // Add the channel to the cachedChannels list if it doesn't already exist
+                    if (!channelExistsInCache) {
+                        cachedChannels.add(channel);
+                    }
+                } else {
+                    System.out.println("Channel is cached");
+                    currentSchedule = channel.getSchedule();
+                    refreshTable();
                 }
             }
-
-            // Add the channel to the cachedChannels list if it doesn't already exist
-            if (!channelExistsInCache) {
-                cachedChannels.add(channel);
-            }
-        } else {
-            // OBS: does not update with timer
-            System.out.println("Channel is cached");
-            currentSchedule = channel.getSchedule();
-            refreshTable();
         }
     }
 
@@ -125,7 +124,7 @@ public class GuiController {
                     if(!channel.getSchedule().isEmpty()) {
                         System.out.println(channel.getName() + ": " + channel.getSchedule());
                     }else{
-                        System.out.println("lost cachedChannel");
+                        System.out.println(channel.getName() + ": " + "Schedule is empty");
                     }
                 }
                 System.out.println("===============================");
@@ -133,40 +132,6 @@ public class GuiController {
         });
 
         //SwingUtilities.invokeLater(this::displayChannelSchedule);
-    }
-
-    /**
-     * Updates the list of programs for a specific channel.
-     *
-     * @param channelId The ID of the channel to update programs for.
-     */
-    public void updateChannelSchedule(int channelId) {
-        //TODO: make thread safe
-        try {
-            List<Program> schedule = apiController.getAllEpisodesInSchedule(channelId);
-
-            SwingUtilities.invokeLater(() -> {
-                for (Channel channel : cachedChannels){
-                    if(channel.getId() == channelId) {
-                        String s = "Update " + channel.getName();
-                        backgroundUpdater.printMethod(s);
-                        // without this if the items in menu and table gets stacked
-                        if (channel.getSchedule().isEmpty()){
-                            channel.setSchedule(schedule);
-                            menuController.filterAndAddChannel();
-                        }
-                        currentSchedule = channel.getSchedule();
-                    }
-                }
-            });
-        } catch (SocketException e) {
-            showErrorDialog("(Network unreachable or other socket-related issues)");
-        } catch (UnknownHostException e){
-            showErrorDialog("(API host not reachable)");
-        } catch (Exception e) {
-            // Handle other exceptions
-            showErrorDialog("An unknown error occurred");
-        }
     }
 
     private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;
