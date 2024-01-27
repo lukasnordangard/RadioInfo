@@ -91,19 +91,9 @@ public class MenuController {
     public void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        view.createMenu(menuBar, "Alternatives", "Update Channels", e -> {
-            if(guiController.getCachedChannels().isEmpty()){
-                ChannelUpdater channelUpdater = new ChannelUpdater(this);
-                channelUpdater.execute();
-            }else {
-                ChannelUpdater channelUpdater = new ChannelUpdater(this);
-                channelUpdater.execute();
-                CacheUpdater cacheUpdater = new CacheUpdater(this, guiController, lastSelectedChannel);
-                cacheUpdater.execute();
-            }
-        });
-        JMenuItem helpMenuItem = new JMenuItem("Help");
-        helpMenuItem.addActionListener(e -> guiController.showHelpDialog());
+        view.createMenu(menuBar, "File", "Help", e -> guiController.showHelpDialog());
+        JMenuItem helpMenuItem = new JMenuItem("Exit");
+        helpMenuItem.addActionListener(e -> System.exit(0));
         menuBar.getMenu(0).addSeparator();
         menuBar.getMenu(0).add(helpMenuItem);
 

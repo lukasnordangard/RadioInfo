@@ -18,6 +18,7 @@ public class RadioInfoUI {
     private JFrame frame;
     private JTable table;
     private JLabel programDetailsLabel;
+    private JButton updateButton;
 
     /**
      * Default constructor for RadioInfoUI.
@@ -78,23 +79,55 @@ public class RadioInfoUI {
         menu.add(menuItem);
         menuBar.add(menu);
     }
-
     /**
      * Creates the main panel for the GUI.
      */
     public void createMainPanel() {
-        JPanel mainPanel = new JPanel(new GridLayout(1, 2));
-        createTable(mainPanel);
-        createProgramDetailsLabel(mainPanel);
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        // Create a panel for the table and program details
+        JPanel tableAndDetailsPanel = new JPanel(new GridLayout(1, 2));
+
+        // Create the table and program details label
+        JPanel tablePanel = createTablePanel();
+        JPanel programDetailsPanel = createProgramDetailsPanel();
+
+        // Add the table and program details label to the tableAndDetailsPanel
+        tableAndDetailsPanel.add(tablePanel);
+        tableAndDetailsPanel.add(programDetailsPanel);
+
+        // Add the tableAndDetailsPanel to the main panel
+        mainPanel.add(tableAndDetailsPanel, BorderLayout.CENTER);
+
+        // Create a panel for the "Update" button with a FlowLayout
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        // Create and add the "Update" button to the buttonPanel
+        updateButton = new JButton("Update program info");
+        buttonPanel.add(updateButton);
+
+        // Add the buttonPanel to the main panel
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
         frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
 
+
+
+    public void setUpdateButtonListener(ActionListener actionListener) {
+        if (updateButton != null) {
+            updateButton.addActionListener(actionListener);
+        }
+    }
+
     /**
-     * Creates the JTable to display program information.
+     * Creates the panel containing the JTable to display program information.
      *
-     * @param mainPanel The main panel to add the table to.
+     * @return The table panel.
      */
-    private void createTable(JPanel mainPanel) {
+    private JPanel createTablePanel() {
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setPreferredSize(new Dimension(frame.getWidth() / 2, frame.getHeight()));
         DefaultTableModel model = new DefaultTableModel(new Object[]{"Program", "Start Time", "End Time"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -104,19 +137,23 @@ public class RadioInfoUI {
         };
         table = new JTable(model);
         JScrollPane tableScrollPane = new JScrollPane(table);
-        mainPanel.add(tableScrollPane);
+        tablePanel.add(tableScrollPane);
+        return tablePanel;
     }
 
     /**
-     * Creates the label to display program details.
+     * Creates the panel containing the JLabel to display program details.
      *
-     * @param mainPanel The main panel to add the label to.
+     * @return The program details panel.
      */
-    private void createProgramDetailsLabel(JPanel mainPanel) {
+    private JPanel createProgramDetailsPanel() {
+        JPanel programDetailsPanel = new JPanel(new BorderLayout());
+        programDetailsPanel.setPreferredSize(new Dimension(frame.getWidth() / 2, frame.getHeight()));
         programDetailsLabel = new JLabel();
         programDetailsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         programDetailsLabel.setLayout(new GridBagLayout());
-        mainPanel.add(programDetailsLabel);
+        programDetailsPanel.add(programDetailsLabel, BorderLayout.CENTER);
+        return programDetailsPanel;
     }
 
     /**

@@ -76,7 +76,20 @@ public class GuiController {
         menuController.createMenuBar();
         startTimer();
         view.createMainPanel();
+
+        // Set the action listener for the "Update" button
+        view.setUpdateButtonListener(e -> handleUpdateButtonClick());
+
         view.getFrame().setVisible(true);
+    }
+
+    public void handleUpdateButtonClick() {
+        ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
+        channelUpdater.execute();
+        if (menuController.getLastSelectedChannel() != -1){
+            CacheUpdater cacheUpdater = new CacheUpdater(menuController, this, menuController.getLastSelectedChannel());
+            cacheUpdater.execute();
+        }
     }
 
     private void startTimer() {
