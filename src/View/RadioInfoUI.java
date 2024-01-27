@@ -79,6 +79,7 @@ public class RadioInfoUI {
         menu.add(menuItem);
         menuBar.add(menu);
     }
+
     /**
      * Creates the main panel for the GUI.
      */

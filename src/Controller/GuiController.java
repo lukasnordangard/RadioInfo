@@ -124,7 +124,7 @@ public class GuiController {
             You can also click on a program in the table to view more information.
             """;
 
-        JOptionPane.showMessageDialog(null, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(view.getFrame(), helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
