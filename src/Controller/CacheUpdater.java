@@ -1,7 +1,6 @@
 package Controller;
 
 import Model.Channel;
-import Model.Program;
 
 import javax.swing.*;
 import java.net.SocketException;
@@ -35,17 +34,7 @@ public class CacheUpdater extends SwingWorker<List<Channel>, Void> {
 
     @Override
     protected List<Channel> doInBackground() throws Exception {
-        for (Channel channel : cache){
-            String s = "Update " + channel.getName();
-            if (SwingUtilities.isEventDispatchThread()) {
-                System.out.println(s);
-            } else {
-                System.out.println("\t"+s);
-            }
-            List<Program> schedule = apiController.getAllEpisodesInSchedule(channel.getId());
-            channel.setSchedule(schedule);
-        }
-        return cache;
+        return apiController.updateAllCachedSchedules(cache);
     }
 
     @Override

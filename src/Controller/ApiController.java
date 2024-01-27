@@ -3,6 +3,7 @@ package Controller;
 import Model.Channel;
 import Model.Program;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -38,6 +39,13 @@ public class ApiController {
         List<Channel> channels;
         String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
         String response = sendGetRequest(apiUrl);
+
+        String s = "--Update channels";
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println(s);
+        } else {
+            System.out.println("\t"+s);
+        }
 
         channels = parser.parseChannels(response);
 
@@ -111,5 +119,19 @@ public class ApiController {
             episodesToReturn.addAll(0, dayBefore);
         }
         return episodesToReturn;
+    }
+
+    public synchronized List<Channel> updateAllCachedSchedules(List<Channel> cache) throws Exception {
+        for (Channel channel : cache){
+            String s = "Update " + channel.getName();
+            if (SwingUtilities.isEventDispatchThread()) {
+                System.out.println(s);
+            } else {
+                System.out.println("\t"+s);
+            }
+            List<Program> schedule = getAllEpisodesInSchedule(channel.getId());
+            channel.setSchedule(schedule);
+        }
+        return cache;
     }
 }

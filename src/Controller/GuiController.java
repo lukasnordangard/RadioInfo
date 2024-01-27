@@ -88,13 +88,15 @@ public class GuiController {
                 SwingUtilities.invokeLater(() -> {
                     ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
                     channelUpdater.execute();
-                    CacheUpdater cacheUpdater = new CacheUpdater(menuController, guiCtrl, menuController.getLastSelectedChannel());
-                    cacheUpdater.execute();
+                    if (menuController.getLastSelectedChannel() != -1){
+                        CacheUpdater cacheUpdater = new CacheUpdater(menuController, guiCtrl, menuController.getLastSelectedChannel());
+                        cacheUpdater.execute();
+                    }
                     System.out.println("timer");
                 });
             }
         };
-        timer.scheduleAtFixedRate(timerTask,0, TimeUnit.MINUTES.toMillis(60));
+        timer.scheduleAtFixedRate(timerTask,0, TimeUnit.SECONDS.toMillis(20));
     }
 
     /**

@@ -107,9 +107,6 @@ public class MenuController {
         menuBar.getMenu(0).addSeparator();
         menuBar.getMenu(0).add(helpMenuItem);
 
-        ChannelUpdater channelUpdater = new ChannelUpdater(this);
-        channelUpdater.execute();
-
         view.getFrame().setJMenuBar(menuBar);
     }
 
