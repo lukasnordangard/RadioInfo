@@ -180,8 +180,7 @@ public class GuiController {
     public void updateSchedule(int channelId, List<Program> schedule){
         for (Channel channel : getCachedChannels()){
             if(channel.getId() == channelId) {
-                String s = "Update " + channel.getName();
-                System.out.println(s);
+                System.out.println("Update " + channel.getName());
                 channel.setSchedule(schedule);
                 setCurrentSchedule(channel.getSchedule());
             }

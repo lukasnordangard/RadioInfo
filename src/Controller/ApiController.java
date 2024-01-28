@@ -40,12 +40,7 @@ public class ApiController {
         String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
         String response = sendGetRequest(apiUrl);
 
-        String s = "--Update channels"  + " - (" + Thread.currentThread().getName() + ")";
-        if (SwingUtilities.isEventDispatchThread()) {
-            System.out.println(s);
-        } else {
-            System.out.println("\t"+s);
-        }
+        System.out.println("--Update channels"  + " - (" + Thread.currentThread().getName() + ")");
 
         channels = parser.parseChannels(response);
 
@@ -123,12 +118,9 @@ public class ApiController {
 
     public synchronized List<Channel> updateAllCachedSchedules(List<Channel> cache) throws Exception {
         for (Channel channel : cache){
-            String s = "Update " + channel.getName() + " - (" + Thread.currentThread().getName() + ")";
-            if (SwingUtilities.isEventDispatchThread()) {
-                System.out.println(s);
-            } else {
-                System.out.println("\t"+s);
-            }
+
+            System.out.println("Update " + channel.getName() + " - (" + Thread.currentThread().getName() + ")");
+
             List<Program> schedule = getAllEpisodesInSchedule(channel.getId());
             channel.setSchedule(schedule);
         }
