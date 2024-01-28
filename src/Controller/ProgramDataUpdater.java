@@ -8,29 +8,24 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * CacheUpdater is responsible for updating the cache of radio channel schedules in the
- * background. The background task retrieves schedules for each channel in the cache, updates
- * the GUI components, and handles exceptions that may occur during the update process.
- */
 public class ProgramDataUpdater extends SwingWorker<List<Channel>, Void> {
 
     // Attributes
     private final ApiController apiController;
     private final MenuController menuController;
     private final GuiController guiController;
-    private final int lastSelectedChannel;
     private final List<Channel> cacheCopy;
+    private final int lastSelectedChannel;
 
     /**
-     * Constructor method that initializes CacheUpdater.
+     * Constructor method that initializes ProgramDataUpdater.
      */
     public ProgramDataUpdater(MenuController menuController, GuiController guiController, ApiController apiController, List<Channel> cacheCopy, int lastSelectedChannel) {
         this.apiController = apiController;
         this.menuController = menuController;
         this.guiController = guiController;
-        this.lastSelectedChannel = lastSelectedChannel;
         this.cacheCopy = cacheCopy;
+        this.lastSelectedChannel = lastSelectedChannel;
     }
 
     @Override
@@ -67,7 +62,7 @@ public class ProgramDataUpdater extends SwingWorker<List<Channel>, Void> {
 
                 // Update cache list
                 guiController.setCachedChannels(newUpdatedCache);
-                guiController.onChannelSelected(lastSelectedChannel);// Have to be here so the channel is selected when the thread is done and not before
+                guiController.onChannelSelected(lastSelectedChannel);
             } else {
                 // Handle the case where the background task failed
                 String message = "Failed to retrieve schedule.";

@@ -33,11 +33,11 @@ public class ChannelUpdater extends SwingWorker<List<Channel>, Void> {
     @Override
     protected void done() {
         try {
-            List<Channel> channels = get();
+            List<Channel> menuChannels = get();
 
-            if (channels != null) {
+            if (menuChannels != null) {
                 menuController.clearChannels();
-                menuController.setAllChannels(channels);
+                menuController.setAllChannels(menuChannels);
                 menuController.filterAndAddChannel();
                 menuController.updateChannelMenus();
             } else {
