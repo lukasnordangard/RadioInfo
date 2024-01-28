@@ -122,7 +122,7 @@ public class GuiController {
                 });
             }
         };
-        timer.scheduleAtFixedRate(timerTask,0, TimeUnit.SECONDS.toMillis(20));
+        timer.scheduleAtFixedRate(timerTask,0, TimeUnit.MINUTES.toMillis(60));
     }
 
     /**
