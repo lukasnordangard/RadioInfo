@@ -104,7 +104,12 @@ public class GuiController {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(() -> {
-                    System.out.println("timer");
+                    String s = "timer";
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        System.out.println(s);
+                    } else {
+                        System.out.println("\t"+s);
+                    }
                     int selectedChannel = menuController.getLastSelectedChannel();
                     if (selectedChannel == -1){
                         ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
@@ -171,7 +176,12 @@ public class GuiController {
                         cachedChannels.add(channel);
                     }
                 } else {
-                    System.out.println("Channel is cached");
+                    String s = "Channel is cached";
+                    if (SwingUtilities.isEventDispatchThread()) {
+                        System.out.println(s);
+                    } else {
+                        System.out.println("\t"+s);
+                    }
                     currentSchedule = channel.getSchedule();
                     refreshTable();
                 }
@@ -182,7 +192,6 @@ public class GuiController {
     public void updateSchedule(int channelId, List<Program> schedule){
         for (Channel channel : getCachedChannels()){
             if(channel.getId() == channelId) {
-                System.out.println("Update " + channel.getName());
                 channel.setSchedule(schedule);
                 setCurrentSchedule(channel.getSchedule());
             }

@@ -29,6 +29,12 @@ public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
 
     @Override
     protected List<Program> doInBackground() throws Exception {
+        String s = "Update " + channelId + " - (" + Thread.currentThread().getName() + ")";
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println(s);
+        } else {
+            System.out.println("\t"+s);
+        }
         return apiController.getAllEpisodesInSchedule(channelId);
     }
 
