@@ -87,12 +87,13 @@ public class GuiController {
 
     public void handleUpdateButtonClick() {
         int selectedChannel = menuController.getLastSelectedChannel();
-        ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
-        channelUpdater.execute();
-        if (selectedChannel != -1){
+        if (selectedChannel == -1){
+            ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
+            channelUpdater.execute();
+        } else {
             List<Channel> cacheCopy = new ArrayList<>(cachedChannels);
-            CacheUpdater cacheUpdater = new CacheUpdater(menuController, this, apiController, cacheCopy, selectedChannel);
-            cacheUpdater.execute();
+            ProgramDataUpdater programDataUpdater = new ProgramDataUpdater(menuController,this, apiController, cacheCopy, selectedChannel);
+            programDataUpdater.execute();
         }
     }
 
@@ -105,12 +106,13 @@ public class GuiController {
                 SwingUtilities.invokeLater(() -> {
                     System.out.println("timer");
                     int selectedChannel = menuController.getLastSelectedChannel();
-                    ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
-                    channelUpdater.execute();
-                    if (selectedChannel != -1){
+                    if (selectedChannel == -1){
+                        ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
+                        channelUpdater.execute();
+                    } else {
                         List<Channel> cacheCopy = new ArrayList<>(cachedChannels);
-                        CacheUpdater cacheUpdater = new CacheUpdater(menuController, guiCtrl, apiController, cacheCopy, selectedChannel);
-                        cacheUpdater.execute();
+                        ProgramDataUpdater programDataUpdater = new ProgramDataUpdater(menuController,guiCtrl, apiController, cacheCopy, selectedChannel);
+                        programDataUpdater.execute();
                     }
                 });
             }

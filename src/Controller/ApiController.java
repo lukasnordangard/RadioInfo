@@ -35,7 +35,7 @@ public class ApiController {
      * @return              A list of Channel objects representing radio channels.
      * @throws Exception    If an error occurs during the HTTP request.
      */
-    public List<Channel> getChannels() throws Exception {
+    public synchronized List<Channel> getChannels() throws Exception {
         List<Channel> channels;
         String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
         String response = sendGetRequest(apiUrl);
