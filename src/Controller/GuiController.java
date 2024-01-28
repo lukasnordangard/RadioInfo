@@ -23,6 +23,7 @@ public class GuiController {
 
     // Attributes
     private final MenuController menuController;
+    private final ApiController apiController;
     private final RadioInfoUI view;
     private List<Channel> cachedChannels;
     private List<Program> currentSchedule;
@@ -36,6 +37,7 @@ public class GuiController {
     public GuiController(RadioInfoUI view) {
         this.view = view;
         this.menuController = new MenuController(this, this.view);
+        this.apiController = new ApiController();
         this.currentSchedule = new ArrayList<>();
         this.cachedChannels = new ArrayList<>();
         timer = new Timer();
@@ -84,10 +86,12 @@ public class GuiController {
     }
 
     public void handleUpdateButtonClick() {
+        int selectedChannel = menuController.getLastSelectedChannel();
         ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
         channelUpdater.execute();
-        if (menuController.getLastSelectedChannel() != -1){
-            CacheUpdater cacheUpdater = new CacheUpdater(menuController, this, menuController.getLastSelectedChannel());
+        if (selectedChannel != -1){
+            List<Channel> cacheCopy = new ArrayList<>(cachedChannels);
+            CacheUpdater cacheUpdater = new CacheUpdater(menuController, this, apiController, cacheCopy, selectedChannel);
             cacheUpdater.execute();
         }
     }
@@ -99,13 +103,15 @@ public class GuiController {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(() -> {
+                    System.out.println("timer");
+                    int selectedChannel = menuController.getLastSelectedChannel();
                     ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
                     channelUpdater.execute();
-                    if (menuController.getLastSelectedChannel() != -1){
-                        CacheUpdater cacheUpdater = new CacheUpdater(menuController, guiCtrl, menuController.getLastSelectedChannel());
+                    if (selectedChannel != -1){
+                        List<Channel> cacheCopy = new ArrayList<>(cachedChannels);
+                        CacheUpdater cacheUpdater = new CacheUpdater(menuController, guiCtrl, apiController, cacheCopy, selectedChannel);
                         cacheUpdater.execute();
                     }
-                    System.out.println("timer");
                 });
             }
         };

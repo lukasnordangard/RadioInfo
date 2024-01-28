@@ -19,39 +19,41 @@ public class CacheUpdater extends SwingWorker<List<Channel>, Void> {
     private final MenuController menuController;
     private final GuiController guiController;
     private final int lastSelectedChannel;
-    private final List<Channel> cache;
+    private final List<Channel> cacheCopy;
 
     /**
      * Constructor method that initializes CacheUpdater.
      */
-    public CacheUpdater(MenuController menuController, GuiController guiController, int lastSelectedChannel) {
-        this.apiController = new ApiController();
+    public CacheUpdater(MenuController menuController, GuiController guiController, ApiController apiController, List<Channel> cacheCopy, int lastSelectedChannel) {
+        this.apiController = apiController;
         this.menuController = menuController;
         this.guiController = guiController;
         this.lastSelectedChannel = lastSelectedChannel;
-        this.cache = guiController.getCachedChannels();
+        this.cacheCopy = cacheCopy;
     }
 
     @Override
     protected List<Channel> doInBackground() throws Exception {
-        return apiController.updateAllCachedSchedules(cache);
+        return apiController.updateAllCachedSchedules(cacheCopy);
     }
 
     @Override
     protected void done() {
         try {
-            List<Channel> cachedChannels = get();
+            List<Channel> updatedCacheCopy = get();
 
-            if (cachedChannels != null) {
-                guiController.setCachedChannels(cachedChannels);
-                for (Channel cachedChannel : cachedChannels){
+            if (updatedCacheCopy != null) {
+                // Update channel schedules in menu //TODO: should this be done on thread?
+                for (Channel cachedChannel : updatedCacheCopy){
                     for (Channel channel : menuController.getAllChannels()){
                         if (cachedChannel.getId() == channel.getId()){
                             channel.setSchedule(cachedChannel.getSchedule());
                         }
                     }
                 }
-                guiController.onChannelSelected(lastSelectedChannel);
+                // Update cache list
+                guiController.setCachedChannels(updatedCacheCopy);
+                guiController.onChannelSelected(lastSelectedChannel);// Have to be here so the channel is selected when the thread is done and not before
             } else {
                 // Handle the case where the background task failed
                 String message = "Failed to retrieve schedule.";
