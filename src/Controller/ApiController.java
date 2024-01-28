@@ -116,14 +116,14 @@ public class ApiController {
         return episodesToReturn;
     }
 
-    public synchronized List<Channel> updateAllCachedSchedules(List<Channel> cache) throws Exception {
-        for (Channel channel : cache){
+    public synchronized List<Channel> updateAllCachedSchedules(List<Channel> cacheCopy) throws Exception {
+        for (Channel channel : cacheCopy){
 
             System.out.println("Update " + channel.getName() + " - (" + Thread.currentThread().getName() + ")");
 
             List<Program> schedule = getAllEpisodesInSchedule(channel.getId());
             channel.setSchedule(schedule);
         }
-        return cache;
+        return cacheCopy;
     }
 }

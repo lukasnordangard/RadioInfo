@@ -35,10 +35,10 @@ public class ScheduleUpdater extends SwingWorker<List<Program>, Void> {
     @Override
     protected void done() {
         try {
-            List<Program> schedule = get();
+            List<Program> updatedSchedule = get();
 
-            if (schedule != null) {
-                guiController.updateSchedule(channelId, schedule);
+            if (updatedSchedule != null) {
+                guiController.updateSchedule(channelId, updatedSchedule);
                 guiController.refreshTable();
             } else {
                 // Handle the case where the background task failed
