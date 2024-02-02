@@ -3,7 +3,6 @@ package Controller;
 import Model.Channel;
 import Model.Program;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -39,13 +38,6 @@ public class ApiController {
         List<Channel> channels;
         String apiUrl = "https://api.sr.se/api/v2/channels/?indent=true&pagination=false&sort=name";
         String response = sendGetRequest(apiUrl);
-
-        String s = "--Update channels"  + " - (" + Thread.currentThread().getName() + ")";
-        if (SwingUtilities.isEventDispatchThread()) {
-            System.out.println(s);
-        } else {
-            System.out.println("\t"+s);
-        }
 
         channels = parser.parseChannels(response);
 
@@ -86,8 +78,7 @@ public class ApiController {
      * @return              A list of Program objects representing programs.
      * @throws Exception    If an error occurs during the HTTP request.
      */
-    private List<Program> getSchedule(int channelId, String date)
-            throws Exception {
+    private List<Program> getSchedule(int channelId, String date) throws Exception {
         List<Program> programs;
 
         String apiUrl = "https://api.sr.se/v2/scheduledepisodes?pagination=false&channelid=" + channelId + "&date=" + date;
@@ -121,16 +112,17 @@ public class ApiController {
         return episodesToReturn;
     }
 
+    /**
+     * Updates the schedule for all channels in the provided cache copy.
+     * Retrieves the schedule for each channel using the channel's ID
+     * and sets the updated schedule for that channel.
+     *
+     * @param cacheCopy The list of channels to update.
+     * @return The updated list of channels with refreshed schedules.
+     * @throws Exception If there is an error while updating the schedules.
+     */
     public synchronized List<Channel> updateAllCachedSchedules(List<Channel> cacheCopy) throws Exception {
         for (Channel channel : cacheCopy){
-
-            String s = "Update " + channel.getName() + " - (" + Thread.currentThread().getName() + ")";
-            if (SwingUtilities.isEventDispatchThread()) {
-                System.out.println(s);
-            } else {
-                System.out.println("\t"+s);
-            }
-
             List<Program> schedule = getAllEpisodesInSchedule(channel.getId());
             channel.setSchedule(schedule);
         }

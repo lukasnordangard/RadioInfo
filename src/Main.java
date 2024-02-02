@@ -7,7 +7,7 @@ import javax.swing.*;
  * Main class that initialize and run the program RadioInfo.
  *
  * @author Lukas Nordangård (id20lsd) (luno0020)
- * @version 1.0
+ * @version 2.0
  */
 public class Main {
     public static void main(String[] args) {
@@ -18,7 +18,7 @@ public class Main {
                 guiCtrl.createAndShowGUI();
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to initialize RadioInfo", "ERROR", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

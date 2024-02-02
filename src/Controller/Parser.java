@@ -8,6 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
@@ -56,7 +57,7 @@ public class Parser {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "An error occured while parsing Channels", "ERROR", JOptionPane.INFORMATION_MESSAGE);
         }
 
         return channels;
@@ -117,7 +118,7 @@ public class Parser {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "An error occured while parsing episodes in schedule", "ERROR", JOptionPane.INFORMATION_MESSAGE);
         }
 
         return programs;

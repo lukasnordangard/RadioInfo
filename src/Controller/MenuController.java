@@ -157,5 +157,4 @@ public class MenuController {
         }
         menuBar.add(channelMenu);
     }
-
 }

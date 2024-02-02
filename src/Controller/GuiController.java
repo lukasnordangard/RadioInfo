@@ -78,13 +78,15 @@ public class GuiController {
         menuController.createMenuBar();
         startTimer();
         view.createMainPanel();
-
-        // Set the action listener for the "Update" button
         view.setUpdateButtonListener(e -> handleUpdateButtonClick());
-
         view.getFrame().setVisible(true);
     }
 
+    /**
+     * Handles the button click event for the update button.
+     * If no channel is selected, initiates a ChannelUpdater to update all channels.
+     * If a channel is selected, initiates a ProgramDataUpdater to update the selected channel's program data.
+     */
     public void handleUpdateButtonClick() {
         int selectedChannel = menuController.getLastSelectedChannel();
         if (selectedChannel == -1){
@@ -97,6 +99,12 @@ public class GuiController {
         }
     }
 
+    /**
+     * Starts a timer task that periodically updates channel data.
+     * The task checks the last selected channel, and if none is selected, initiates a ChannelUpdater.
+     * If a channel is selected, it initiates a ProgramDataUpdater for the selected channel.
+     * The task runs at fixed intervals of 60 minutes.
+     */
     private void startTimer() {
         GuiController guiCtrl = this;
 
@@ -104,12 +112,6 @@ public class GuiController {
             @Override
             public void run() {
                 SwingUtilities.invokeLater(() -> {
-                    String s = "timer";
-                    if (SwingUtilities.isEventDispatchThread()) {
-                        System.out.println(s);
-                    } else {
-                        System.out.println("\t"+s);
-                    }
                     int selectedChannel = menuController.getLastSelectedChannel();
                     if (selectedChannel == -1){
                         ChannelUpdater channelUpdater = new ChannelUpdater(menuController);
@@ -176,12 +178,6 @@ public class GuiController {
                         cachedChannels.add(channel);
                     }
                 } else {
-                    String s = "Channel is cached";
-                    if (SwingUtilities.isEventDispatchThread()) {
-                        System.out.println(s);
-                    } else {
-                        System.out.println("\t"+s);
-                    }
                     currentSchedule = channel.getSchedule();
                     refreshTable();
                 }
@@ -202,22 +198,7 @@ public class GuiController {
      * Requests a refresh of the GUI table.
      */
     public void refreshTable() {
-        SwingUtilities.invokeLater(() -> {
-            displayChannelSchedule();
-
-            if (!cachedChannels.isEmpty()){
-                for (Channel channel : cachedChannels){
-                    if(!channel.getSchedule().isEmpty()) {
-                        System.out.println(channel.getName() + ": " + channel.getSchedule());
-                    }else{
-                        System.out.println(channel.getName() + ": " + "Schedule is empty");
-                    }
-                }
-                System.out.println("===============================");
-            }
-        });
-
-        //SwingUtilities.invokeLater(this::displayChannelSchedule);
+        SwingUtilities.invokeLater(this::displayChannelSchedule);
     }
 
     private final ListSelectionListener listSelectionListener = this::handleListSelectionEvent;
