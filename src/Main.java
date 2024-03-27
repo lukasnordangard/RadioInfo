@@ -18,7 +18,9 @@ public class Main {
                 guiCtrl.createAndShowGUI();
             });
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Failed to initialize RadioInfo", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(null, "Failed to initialize RadioInfo", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            });
         }
     }
 }
