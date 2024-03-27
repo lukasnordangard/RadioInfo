@@ -57,7 +57,9 @@ public class Parser {
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "An error occured while parsing Channels", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(null, "An error occured while parsing Channels", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            });
         }
 
         return channels;
@@ -118,7 +120,9 @@ public class Parser {
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "An error occured while parsing episodes in schedule", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(null, "An error occured while parsing episodes in schedule", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+            });
         }
 
         return programs;
